@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #09090b;
+  --foreground: #fafafa;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-lora);
+}
+
+html {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #18181b;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #18181b;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 999px;
+  border: 2px solid #18181b;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #18181b;
+}
+
+.font-serif {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
+.reader-prose strong {
+  color: #f4f4f5;
+  font-weight: 600;
+}
+
+.reader-prose em {
+  color: #d4d4d8;
+}
+
+.reader-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.reader-code .shiki {
+  background: transparent !important;
+}
+
+.reader-code code {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}

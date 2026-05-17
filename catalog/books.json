@@ -1,0 +1,20 @@
+{
+  "books": [
+    {
+      "slug": "the-solvers-mind",
+      "title": "The Solver's Mind",
+      "subtitle": "A Field Manual for Rewiring Problem-Solving from the Ground Up",
+      "description": "Twenty lenses for seeing problems clearly before you reach for a solution — perception, systems, and meta-solving in one lattice.",
+      "type": "mental-models",
+      "folder": "the-solvers-mind"
+    },
+    {
+      "slug": "designing-ci-cd-pipelines",
+      "title": "Release Engineering at Scale",
+      "subtitle": "Design Patterns for CI/CD Pipelines",
+      "description": "A field manual of CI/CD design patterns — from hermetic builds and GitOps to planetary rollouts, MLOps, and case studies from teams shipping at real scale.",
+      "type": "technical",
+      "folder": "designing-ci-cd-pipelines"
+    }
+  ]
+}
