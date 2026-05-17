@@ -1,0 +1,108 @@
+# Readit — GitLab CI
+#
+# main branch:
+#   android:apk  — debug APK artifact (sideload / internal install)
+#   web:build    — validates Next.js production build (deploy stage coming next)
+#
+# Optional release signing (future): set CI variables ANDROID_KEYSTORE_BASE64,
+# ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD and switch
+# the Android job to assembleRelease with a signing config in app/build.gradle.kts.
+
+stages:
+  - build
+  # - deploy   # enable when domain / hosting is ready
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_USER_HOME: "${CI_PROJECT_DIR}/apps/android/.gradle"
+  ANDROID_SDK_ROOT: "${CI_PROJECT_DIR}/.android-sdk"
+  ANDROID_HOME: "${CI_PROJECT_DIR}/.android-sdk"
+  CMDLINE_TOOLS_URL: "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+
+# --- Android -------------------------------------------------------------------
+
+.android_sdk_setup:
+  image: eclipse-temurin:17-jammy
+  cache:
+    key: android-sdk-v1
+    paths:
+      - .android-sdk/
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq wget unzip
+    - export PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
+    - |
+      if [ ! -x "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" ]; then
+        mkdir -p "${ANDROID_HOME}/cmdline-tools"
+        wget -q "${CMDLINE_TOOLS_URL}" -O /tmp/cmdline-tools.zip
+        unzip -q /tmp/cmdline-tools.zip -d "${ANDROID_HOME}/cmdline-tools"
+        mv "${ANDROID_HOME}/cmdline-tools/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest"
+      fi
+    - |
+      if [ ! -d "${ANDROID_HOME}/platforms/android-35" ]; then
+        yes | sdkmanager --licenses >/dev/null || true
+        sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      fi
+
+android:apk:
+  extends: .android_sdk_setup
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  cache:
+    key: android-gradle-${CI_COMMIT_REF_SLUG}
+    paths:
+      - apps/android/.gradle/
+    policy: pull-push
+  script:
+    - cd apps/android
+    - chmod +x gradlew
+    # Debug APK: no keystore required; fine for sideloading from CI artifacts.
+    - ./gradlew assembleDebug --no-daemon --stacktrace
+    - |
+      APK_SRC="app/build/outputs/apk/debug/app-debug.apk"
+      APK_OUT="${CI_PROJECT_DIR}/readit-${CI_COMMIT_SHORT_SHA}.apk"
+      cp "${APK_SRC}" "${APK_OUT}"
+      ls -lh "${APK_OUT}"
+  artifacts:
+    name: "readit-android-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - readit-*.apk
+    expire_in: 90 days
+    expose_as: "Readit Android (debug APK)"
+
+# --- Web (build now; deploy when domain is ready) ------------------------------
+
+web:build:
+  stage: build
+  image: node:22-bookworm
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  cache:
+    key: npm-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - apps/web/node_modules/
+  script:
+    - npm ci
+    - npm run build:web
+  artifacts:
+    name: "readit-web-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - apps/web/.next/
+      - apps/web/public/
+      - apps/web/package.json
+      - apps/web/next.config.ts
+    expire_in: 7 days
+
+# deploy:web:
+#   stage: deploy
+#   image: node:22-bookworm
+#   needs: ["web:build"]
+#   rules:
+#     - if: $CI_COMMIT_BRANCH == "main"
+#   script:
+#     # Example: static host, VPS, or container registry — wire to your domain.
+#     - echo "Deploy apps/web to production (configure runner secrets + host)"
+#   environment:
+#     name: production
+#     url: https://your-domain.example
