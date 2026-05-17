@@ -500,9 +500,3 @@ The safety warning that belongs in every discussion of build caching: caches are
 ## What's Next
 
 The Sidecar Verification Pattern (Chapter 6) addresses a different kind of CI efficiency: how to run compliance, security, and policy checks without blocking the main build. Security scans, license audits, and policy checks are critical but should not be on the critical path of a developer's feedback loop. Running them as parallel sidecars — non-blocking by default, blocking only for critical violations — is how mature CI systems integrate security without sacrificing speed.
-
-[→ Next: Chapter 6 — The Sidecar Verification Pattern](./chapter-06-sidecar-verification.md)
-
----
-*[← Previous: Chapter 4 — The Matrix Build Pattern](./chapter-04-matrix-build.md) |
-[→ Next: Chapter 6 — The Sidecar Verification Pattern](./chapter-06-sidecar-verification.md)*

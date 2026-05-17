@@ -350,9 +350,3 @@ With lineage tracking, the Meridian Health team would have known in 10 minutes t
 ## Chapter Summary
 
 ML data lineage is the audit infrastructure that makes regulatory compliance possible and debugging tractable. Without it, a single GDPR erasure request triggers full model retraining across all deployed models. With it, the impact of a data deletion event is precisely scoped to the models that actually used that data. MLflow provides the run tracking layer; DVC provides the data versioning layer; model cards provide the human-readable provenance document. All three are required for a complete lineage system.
-
-[→ Next: Chapter 38 — The ML Pipeline Orchestration & Model Registry Pattern](./chapter-38-ml-pipeline-orchestration.md)
-
----
-*[← Previous: Chapter 36 — The Model Shadowing Pattern](./chapter-36-model-shadowing.md) |
-[→ Next: Chapter 38 — The ML Pipeline Orchestration & Model Registry Pattern](./chapter-38-ml-pipeline-orchestration.md)*

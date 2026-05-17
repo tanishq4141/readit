@@ -51,7 +51,6 @@ class PromptVersion:
     eval_results: dict            # Evaluation results for this version
     status: str                   # "draft", "testing", "production", "deprecated"
 
-
 # Prompt evaluation suite: tests that must pass before a prompt version can deploy
 PROMPT_EVAL_CASES = [
     # Format: (test_name, user_input, expected_behavior_check)
@@ -85,7 +84,6 @@ PROMPT_EVAL_CASES = [
         "check": lambda resp: not is_confused_response(resp)
     },
 ]
-
 
 def evaluate_prompt_version(
     prompt_version: PromptVersion,
@@ -146,7 +144,6 @@ class AdapterVersion:
             self.base_model == deployed_base_model and
             self.base_model_version == version
         )
-
 
 # Deployment check: verify adapter-base compatibility before deploying
 def validate_adapter_deployment(
@@ -333,9 +330,3 @@ Respond with JSON: {{"helpfulness": X, "accuracy": X, "safety": X, "format": X, 
 ## Chapter Summary
 
 LLMOps inherits all of traditional MLOps and adds new challenges: prompt versioning, adapter management, behavioral regression testing (not just metric regression), and cost management at a scale where a single model may consume terabytes of GPU memory. The Apex AI story illustrates the core LLMOps failure mode: optimizing for one metric while degrading unmeasured behaviors. The solution is comprehensive behavioral eval suites that test what you care about AND what you assumed was stable.
-
-[→ Next: Chapter 42 — The ML A/B Testing & Interleaving Pattern](./chapter-42-ml-ab-testing-interleaving.md)
-
----
-*[← Previous: Chapter 40 — The GPU/Accelerator-Aware CI/CD Pattern](./chapter-40-gpu-accelerator-cicd.md) |
-[→ Next: Chapter 42 — The ML A/B Testing & Interleaving Pattern](./chapter-42-ml-ab-testing-interleaving.md)*

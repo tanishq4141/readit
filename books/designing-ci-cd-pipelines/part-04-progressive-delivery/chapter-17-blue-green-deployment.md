@@ -489,9 +489,3 @@ The deployment model is simple. The operational discipline around it is not. Tea
 ## What's Next
 
 Chapter 18 takes the "atomic flip" model of blue-green and makes it gradual. The Canary Release pattern shifts traffic in increments — 1%, 5%, 25%, 100% — with automated health monitoring at each step. A canary deployment catches problems before they affect your entire user base, rather than after the full blue-green switch.
-
-[→ Next: Chapter 18 — The Canary Release Pattern](./chapter-18-canary-release.md)
-
----
-*[← Previous: Chapter 16 — The FinOps Target Pattern](../part-03-cd-patterns/chapter-16-finops-target.md) |
-[→ Next: Chapter 18 — The Canary Release Pattern](./chapter-18-canary-release.md)*

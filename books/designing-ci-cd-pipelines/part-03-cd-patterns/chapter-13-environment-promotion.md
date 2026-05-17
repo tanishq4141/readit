@@ -448,9 +448,3 @@ Clearpath's 23-step checklist contained the right checks. The wrong part was exp
 ## What's Next
 
 Chapter 14 addresses the multi-service coordination problem: what happens when multiple interdependent services need to be promoted together, and changing service A's API breaks service B. Contract testing, deployment order orchestration, and the version compatibility matrix are the tools for coordinating deployments across a microservices system.
-
-[→ Next: Chapter 14 — The Multi-Microservice Coordination Pattern](./chapter-14-multi-microservice-coordination.md)
-
----
-*[← Previous: Chapter 12 — The Ephemeral Environment Pattern](./chapter-12-ephemeral-environment.md) |
-[→ Next: Chapter 14 — The Multi-Microservice Coordination Pattern](./chapter-14-multi-microservice-coordination.md)*

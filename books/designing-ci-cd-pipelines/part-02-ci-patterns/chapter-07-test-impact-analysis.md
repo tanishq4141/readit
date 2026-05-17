@@ -490,9 +490,3 @@ The hardest part of TIA is not the implementation — it's maintaining the accur
 ## What's Next
 
 Chapter 8 takes the TIA concept further: instead of just mapping changes to affected tests, it applies machine learning to predict which tests are likely to fail, optimal test ordering, and build failure probability — using historical CI data as the training signal. This is the pattern used by Google, Microsoft, and Uber at the frontier of CI optimization.
-
-[→ Next: Chapter 8 — The Predictive & AI-Assisted Build Pattern](./chapter-08-predictive-ai-build.md)
-
----
-*[← Previous: Chapter 6 — The Sidecar Verification Pattern](./chapter-06-sidecar-verification.md) |
-[→ Next: Chapter 8 — The Predictive & AI-Assisted Build Pattern](./chapter-08-predictive-ai-build.md)*

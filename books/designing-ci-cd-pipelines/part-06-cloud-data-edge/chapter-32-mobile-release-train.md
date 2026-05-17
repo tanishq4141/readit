@@ -421,9 +421,3 @@ The Clearfund story is the canonical mobile release engineering failure: a criti
 Part VI is complete. The specialized delivery patterns — database migrations, IaC promotion, serverless, edge, multi-region, and mobile — cover the deployment contexts where the general-purpose patterns from Parts III and IV break down.
 
 Part VII enters the MLOps territory: Continuous Training, feature stores, model champion/challenger, and the deployment patterns specific to machine learning systems where the "artifact" being deployed is a trained model, not a compiled binary.
-
-[→ Next: Chapter 33 — The Continuous Training (CT) Trigger Pattern](../part-07-mlops-ct/chapter-33-continuous-training-trigger.md)
-
----
-*[← Previous: Chapter 31 — The Cloud-Native Multi-Region Active-Active Pattern](./chapter-31-multi-region-active-active.md) |
-[→ Next: Chapter 33 — The Continuous Training (CT) Trigger Pattern](../part-07-mlops-ct/chapter-33-continuous-training-trigger.md)*

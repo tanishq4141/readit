@@ -416,9 +416,3 @@ The pattern works because it converts a single high-risk event (the big-bang mer
 ## What's Next
 
 Chapter 16 closes Part III with a pattern that is often overlooked until the finance team sends an email: the FinOps Target Pattern, which makes cloud cost a first-class pipeline constraint. When ephemeral environments, multi-region deployments, and GPU workloads are all running through your pipeline, the pipeline itself is a cost generation machine. Chapter 16 covers how to add cost visibility and cost gates before the AWS bill becomes a board-level conversation.
-
-[→ Next: Chapter 16 — The FinOps Target Pattern](./chapter-16-finops-target.md)
-
----
-*[← Previous: Chapter 14 — The Multi-Microservice Coordination Pattern](./chapter-14-multi-microservice-coordination.md) |
-[→ Next: Chapter 16 — The FinOps Target Pattern](./chapter-16-finops-target.md)*

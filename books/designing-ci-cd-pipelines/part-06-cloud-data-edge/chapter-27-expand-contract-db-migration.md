@@ -318,9 +318,3 @@ Database migrations are the deployment constraint that most engineering teams le
 ## What's Next
 
 Chapter 28 applies a similar promotion-based thinking to infrastructure: Terraform plans as promotable artifacts, plan review as a required gate, and drift detection as the equivalent of "does the cluster match what GitOps says it should?"
-
-[→ Next: Chapter 28 — The IaC Promotion Pattern](./chapter-28-iac-promotion.md)
-
----
-*[← Previous: Chapter 26 — The On-Call & Incident-Driven Release Feedback Pattern](../part-05-observability-feedback/chapter-26-oncall-incident-feedback.md) |
-[→ Next: Chapter 28 — The IaC Promotion Pattern](./chapter-28-iac-promotion.md)*

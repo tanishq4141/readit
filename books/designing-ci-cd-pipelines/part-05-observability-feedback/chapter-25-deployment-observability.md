@@ -72,7 +72,6 @@ class DeployEvent:
     change_type: str      # "feature", "bugfix", "dependency_update", "config", "rollback"
     risk_level: str       # "low", "medium", "high" — set by the pipeline based on change scope
 
-
 def emit_to_datadog(event: DeployEvent):
     """Emit deployment event to Datadog as a deployment annotation."""
     
@@ -109,7 +108,6 @@ def emit_to_datadog(event: DeployEvent):
         }
     )
 
-
 def emit_to_honeycomb(event: DeployEvent):
     """Emit deployment event to Honeycomb as a marker."""
     
@@ -128,7 +126,6 @@ def emit_to_honeycomb(event: DeployEvent):
             "url": event.pr_url
         }
     )
-
 
 def emit_to_grafana(event: DeployEvent, grafana_url: str):
     """Emit deployment event to Grafana as an annotation."""
@@ -209,7 +206,6 @@ class MetricComparison:
     is_regression: bool
     severity: str              # "ok", "warning", "critical"
 
-
 def compare_metric_pre_post_deploy(
     prometheus_url: str,
     metric_query: str,
@@ -270,7 +266,6 @@ def compare_metric_pre_post_deploy(
         is_regression=is_regression,
         severity=severity
     )
-
 
 def run_post_deploy_analysis(
     service: str,
@@ -479,9 +474,3 @@ The correlation engine that distinguishes deployment-caused regressions from ext
 ## What's Next
 
 Chapter 26 closes Part V with the hardest feedback loop to build: converting production incidents into pipeline changes. The incident → postmortem → pipeline improvement cycle is where the most valuable signal lives — and where it most often gets lost. Every SEV-1 caused by a deployment contains information about what the pipeline should have caught. Encoding that information as a concrete pipeline change is the discipline this chapter covers.
-
-[→ Next: Chapter 26 — The On-Call & Incident-Driven Release Feedback Pattern](./chapter-26-oncall-incident-feedback.md)
-
----
-*[← Previous: Chapter 24 — The DORA Metrics Pipeline Feedback Pattern](./chapter-24-dora-metrics-feedback.md) |
-[→ Next: Chapter 26 — The On-Call & Incident-Driven Release Feedback Pattern](./chapter-26-oncall-incident-feedback.md)*

@@ -365,9 +365,3 @@ The testing pyramid is the wrong mental model because it optimizes for cost at t
 Part I has established the vocabulary and the principles. From here, the book moves into the actual patterns — starting with the foundation of everything else: the hermetic build.
 
 Chapter 3 covers the Hermetic Build Pattern in complete implementation depth: Bazel, Nix, containerized build environments, reproducibility guarantees, and the specific configuration choices that separate a truly hermetic build from one that merely looks hermetic. If you've ever heard a developer say "it works in CI but not in production" — Chapter 3 is why that happens and how to make it stop.
-
-[→ Next: Chapter 3 — The Hermetic Build Pattern](../part-02-ci-patterns/chapter-03-hermetic-build.md)
-
----
-*[← Previous: Chapter 1 — The Evolution of CI, CD, and CT](./chapter-01-evolution-ci-cd-ct.md) |
-[→ Next: Chapter 3 — The Hermetic Build Pattern](../part-02-ci-patterns/chapter-03-hermetic-build.md)*

@@ -394,9 +394,3 @@ IaC promotion treats infrastructure changes with the same rigor as application c
 ## What's Next
 
 Chapter 29 addresses a deployment problem unique to serverless functions: cold start. Lambda functions that haven't been invoked recently take 100ms–3 seconds to initialize before serving the first request. Alias-based traffic shifting allows canary-style rollouts for Lambda, and provisioned concurrency eliminates cold start for latency-sensitive functions.
-
-[→ Next: Chapter 29 — The Serverless Cold-Start & Alias Pattern](./chapter-29-serverless-cold-start-alias.md)
-
----
-*[← Previous: Chapter 27 — The Expand-and-Contract Database Migration Pattern](./chapter-27-expand-contract-db-migration.md) |
-[→ Next: Chapter 29 — The Serverless Cold-Start & Alias Pattern](./chapter-29-serverless-cold-start-alias.md)*

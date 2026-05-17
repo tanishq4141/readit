@@ -208,9 +208,3 @@ The policy-as-code approach means compliance requirements are versioned, tested,
 Capital One demonstrates that continuous delivery and regulatory compliance are not fundamentally opposed — they are both served by automated, auditable processes. The traditional belief that compliance requires slow manual change management is an artifact of manual evidence collection. When the evidence collection is automated, compliance becomes continuous and deployments remain fast.
 
 The key architectural decisions: policy-as-code for pipeline enforcement, pull-based GitOps for air-gapped environments, automated CAB criteria checking, and continuous compliance monitoring rather than point-in-time audits. None of these are unique to Capital One — they're patterns applicable to any regulated organization willing to invest in compliance engineering.
-
-[→ Next: Chapter 56 — The Global Hyper-Scale Pipeline: How Google Ships](./chapter-56-hyperscale-pipeline-google.md)
-
----
-*[← Previous: Chapter 54 — The Enterprise Microservices Pipeline: How Netflix Delivers](./chapter-54-enterprise-pipeline-netflix.md) |
-[→ Next: Chapter 56 — The Global Hyper-Scale Pipeline: How Google Ships](./chapter-56-hyperscale-pipeline-google.md)*

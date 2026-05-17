@@ -180,7 +180,6 @@ class IncidentEvent:
     caused_by_deployment: bool = False
     causing_deployment_id: Optional[str] = None
 
-
 def emit_deployment_event(event: DeploymentEvent):
     """Write structured deployment event to the telemetry backend."""
     # Options: BigQuery streaming insert, Kafka, S3 JSON lines, Datadog events
@@ -417,9 +416,3 @@ The four metrics each have a bounded set of root causes and a corresponding set 
 ## What's Next
 
 Chapter 25 addresses the observability infrastructure that makes rapid MTTR possible: deployment markers, metric correlation, and the automated deployment impact report. When every production deployment emits a structured event to the observability platform, the question "did this deploy cause the anomaly?" moves from a 4-hour investigation to a 4-minute correlation.
-
-[→ Next: Chapter 25 — The Deployment Observability & Correlation Pattern](./chapter-25-deployment-observability.md)
-
----
-*[← Previous: Chapter 23 — The SLO-Based Release Gating Pattern](./chapter-23-slo-release-gating.md) |
-[→ Next: Chapter 25 — The Deployment Observability & Correlation Pattern](./chapter-25-deployment-observability.md)*

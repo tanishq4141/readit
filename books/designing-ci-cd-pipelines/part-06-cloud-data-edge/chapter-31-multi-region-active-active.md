@@ -347,9 +347,3 @@ Multi-region active-active is the deployment context where every bad practice is
 ## What's Next
 
 Chapter 32 closes Part VI with mobile deployment — the context where "rollback in 5 minutes" is physically impossible due to App Store review cycles. Mobile deployment combines phased App Store rollouts, OTA update channels, feature flags as the primary runtime control mechanism, and forced upgrade flows for critical security patches.
-
-[→ Next: Chapter 32 — The Mobile Release Train Pattern](./chapter-32-mobile-release-train.md)
-
----
-*[← Previous: Chapter 30 — The GitOps-at-the-Edge Pattern](./chapter-30-gitops-at-the-edge.md) |
-[→ Next: Chapter 32 — The Mobile Release Train Pattern](./chapter-32-mobile-release-train.md)*

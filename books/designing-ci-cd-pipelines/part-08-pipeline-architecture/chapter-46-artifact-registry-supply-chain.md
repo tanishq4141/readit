@@ -354,9 +354,3 @@ Part VIII is complete. The pipeline architecture patterns — templates, break-g
 ## What's Next
 
 Part IX enters planetary-scale release engineering: the patterns used by Google, Netflix, and Meta to ship to hundreds of millions of users while maintaining sub-1% change failure rates. Chapter 47 opens with merge queues — the speculative pre-submit testing that keeps a monorepo's main branch perpetually green even with thousands of commits per day.
-
-[→ Next: Chapter 47 — The Merge Queue (Pre-Submit) Pattern](../part-09-planetary-scale/chapter-47-merge-queue-pre-submit.md)
-
----
-*[← Previous: Chapter 45 — The Rollback & Roll-forward Patterns](./chapter-45-rollback-roll-forward.md) |
-[→ Next: Chapter 47 — The Merge Queue (Pre-Submit) Pattern](../part-09-planetary-scale/chapter-47-merge-queue-pre-submit.md)*

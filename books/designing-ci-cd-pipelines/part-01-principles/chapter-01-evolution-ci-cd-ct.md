@@ -309,8 +309,3 @@ The modern release engineer's mandate is to design the system that makes deploym
 ## What's Next
 
 Chapter 1 established the *history* and the *vocabulary*. Chapter 2 establishes the *principles*: the first-order commitments that a well-designed pipeline makes, and the reasoning behind each commitment. If Chapter 1 answers "how did we get here?", Chapter 2 answers "what are we actually trying to build?". It covers trunk-based development as a prerequisite (not a preference), the deployment safety contract, the hermetic reproducibility axiom, and why the testing pyramid is the wrong mental model for most modern systems.
-
-[→ Next: Chapter 2 — Core Principles](./chapter-02-core-principles.md)
-
----
-*[→ Next: Chapter 2 — Core Principles](./chapter-02-core-principles.md)*

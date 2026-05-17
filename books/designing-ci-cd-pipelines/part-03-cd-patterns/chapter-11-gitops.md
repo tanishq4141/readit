@@ -480,9 +480,3 @@ The value of GitOps is that it converts deployment from an event (something that
 ## What's Next
 
 Chapter 12 extends GitOps to per-PR preview environments: ephemeral environments that are created when a PR is opened, updated as commits are pushed, and destroyed when the PR merges or closes. This requires GitOps infrastructure that can create and tear down complete application stacks on demand — Argo CD ApplicationSets, Kubernetes namespace-per-branch, and cost containment strategies.
-
-[→ Next: Chapter 12 — The Ephemeral Environment Pattern](./chapter-12-ephemeral-environment.md)
-
----
-*[← Previous: Chapter 10 — The Push vs. Pull Deployment Pattern](./chapter-10-push-vs-pull.md) |
-[→ Next: Chapter 12 — The Ephemeral Environment Pattern](./chapter-12-ephemeral-environment.md)*

@@ -435,9 +435,3 @@ The golden path is the product the platform team ships to service teams: an opin
 ## What's Next
 
 Chapter 44 covers the break-glass pattern: what happens when the pipeline is correct, the gates are necessary, but right now, at 11 PM, a critical vulnerability is active and you need to ship a patch in 15 minutes, not 45. The break-glass mechanism allows pipeline bypass with full auditability — and the organizational discipline to ensure that bypass is rare, reviewed, and never becomes the normal path.
-
-[→ Next: Chapter 44 — The Break-Glass (Emergency Hotfix) Pattern](./chapter-44-break-glass-hotfix.md)
-
----
-*[← Previous: Chapter 42 — The ML A/B Testing & Interleaving Pattern](../part-07-mlops-ct/chapter-42-ml-ab-testing-interleaving.md) |
-[→ Next: Chapter 44 — The Break-Glass (Emergency Hotfix) Pattern](./chapter-44-break-glass-hotfix.md)*

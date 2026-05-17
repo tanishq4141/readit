@@ -467,9 +467,3 @@ The Tomás story is the canonical success case: the canary caught a memory leak 
 ## What's Next
 
 Chapter 19 extends the multi-version concept: what if you need to run three or more versions simultaneously in production? The Rainbow Deployment pattern addresses multi-tenant version pinning, multi-version A/B/C experiments, and the operational complexity of N-version concurrency.
-
-[→ Next: Chapter 19 — The Rainbow Deployment Pattern](./chapter-19-rainbow-deployment.md)
-
----
-*[← Previous: Chapter 17 — The Blue-Green Deployment Pattern](./chapter-17-blue-green-deployment.md) |
-[→ Next: Chapter 19 — The Rainbow Deployment Pattern](./chapter-19-rainbow-deployment.md)*

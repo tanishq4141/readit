@@ -464,9 +464,3 @@ The controversial take: most microservices teams are deploying services in an or
 ## What's Next
 
 Chapter 15 addresses the large-scale refactoring problem: how do you make significant code changes — rewriting a module, extracting a service, replacing a database ORM — without accumulating on a long-lived feature branch that creates an integration nightmare? Branch by Abstraction is the technique that makes large changes possible on trunk.
-
-[→ Next: Chapter 15 — The Branch by Abstraction Pattern](./chapter-15-branch-by-abstraction.md)
-
----
-*[← Previous: Chapter 13 — The Environment Promotion Pattern](./chapter-13-environment-promotion.md) |
-[→ Next: Chapter 15 — The Branch by Abstraction Pattern](./chapter-15-branch-by-abstraction.md)*

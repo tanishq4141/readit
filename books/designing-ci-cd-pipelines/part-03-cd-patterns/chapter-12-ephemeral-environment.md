@@ -509,9 +509,3 @@ The minimum viable implementation is namespace-per-branch with a seeded database
 ## What's Next
 
 Chapter 13 addresses what happens after developer testing is complete: promoting the verified artifact through environments — from ephemeral preview through shared staging to production — with appropriate gates at each boundary. The environment promotion pattern formalizes what "ready to go to production" means and how to enforce it.
-
-[→ Next: Chapter 13 — The Environment Promotion Pattern](./chapter-13-environment-promotion.md)
-
----
-*[← Previous: Chapter 11 — The GitOps Pattern](./chapter-11-gitops.md) |
-[→ Next: Chapter 13 — The Environment Promotion Pattern](./chapter-13-environment-promotion.md)*

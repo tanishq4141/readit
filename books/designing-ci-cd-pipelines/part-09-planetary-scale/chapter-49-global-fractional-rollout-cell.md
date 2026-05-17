@@ -368,9 +368,3 @@ For Prism Global, the math says: start with 0.3% of traffic, detect within 8 min
 ## Chapter Summary
 
 The cell pattern converts global deployments into local experiments. By routing a mathematically precise fraction of global traffic to isolated cells, you bound the blast radius of every deployment to the cell size. The Prism Global incident — 80 million users affected for 23 minutes — becomes 240,000 users affected for 13 minutes. The cell architecture is not just about deployment safety; it's about making the worst case survivable.
-
-[→ Next: Chapter 50 — The Synthetic Prober Verification Pattern](./chapter-50-synthetic-prober-verification.md)
-
----
-*[← Previous: Chapter 48 — The Configuration-Decoupled Release Pattern](./chapter-48-config-decoupled-release.md) |
-[→ Next: Chapter 50 — The Synthetic Prober Verification Pattern](./chapter-50-synthetic-prober-verification.md)*

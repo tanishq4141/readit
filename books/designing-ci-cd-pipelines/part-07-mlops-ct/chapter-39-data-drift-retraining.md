@@ -95,7 +95,6 @@ def compute_psi(training_dist: np.array, production_dist: np.array, bins: int = 
     psi = np.sum((prod_pct - train_pct) * np.log(prod_pct / train_pct))
     return psi
 
-
 def compute_ks_drift(training_dist: np.array, production_dist: np.array) -> tuple[float, float]:
     """
     Kolmogorov-Smirnov two-sample test.
@@ -297,9 +296,3 @@ def detect_concept_drift(
 ## Chapter Summary
 
 Data drift detection is the monitoring system that connects the real world's changes to the model retraining pipeline. PSI and KS tests on input distributions detect covariate shift. Performance monitoring on labeled outcomes detects concept drift. The escalation ladder prevents over-reaction to noise and under-reaction to genuine distribution shifts. COVID showed the difference between organizations with drift monitoring (4-day detection) and those without (43-day detection). The gap is infrastructure, not intelligence.
-
-[→ Next: Chapter 40 — The GPU/Accelerator-Aware CI/CD Pattern](./chapter-40-gpu-accelerator-cicd.md)
-
----
-*[← Previous: Chapter 38 — The ML Pipeline Orchestration & Model Registry Pattern](./chapter-38-ml-pipeline-orchestration.md) |
-[→ Next: Chapter 40 — The GPU/Accelerator-Aware CI/CD Pattern](./chapter-40-gpu-accelerator-cicd.md)*

@@ -273,9 +273,3 @@ def check_feature_freshness(feature_store, slos: list):
 ## Chapter Summary
 
 The feature store is the infrastructure that makes training/serving parity enforceable rather than aspirational. Without it, training/serving skew accumulates silently — different window sizes, different null handling, different normalization — until offline accuracy and online accuracy diverge enough to notice. Point-in-time correctness is the feature store concept that prevents target leakage in historical training datasets. Feature pipeline CI is the test harness that catches computation regressions before they reach training.
-
-[→ Next: Chapter 35 — The Model Champion/Challenger Pattern](./chapter-35-model-champion-challenger.md)
-
----
-*[← Previous: Chapter 33 — The Continuous Training (CT) Trigger Pattern](./chapter-33-continuous-training-trigger.md) |
-[→ Next: Chapter 35 — The Model Champion/Challenger Pattern](./chapter-35-model-champion-challenger.md)*

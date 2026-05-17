@@ -286,9 +286,3 @@ For services where p99 latency matters and is in the range of 1–10ms, an Envoy
 ## Chapter Summary
 
 eBPF represents the convergence of deployment traffic management with the Linux kernel. For high-throughput, latency-sensitive services, replacing userspace proxies with eBPF programs in the kernel eliminates 100–200μs of proxy overhead per hop — a meaningful improvement when the total request budget is measured in milliseconds. Cilium's implementation of service mesh capabilities via eBPF makes this accessible without writing custom BPF programs. The decision point: if your service's p99 latency is more than 2ms and the proxy overhead represents more than 10% of that budget, the Cilium migration cost is justified by the performance return.
-
-[→ Next: Chapter 62 — The Agentic CI/CD & Self-Evolving Infrastructure Pattern](./chapter-62-agentic-cicd-self-evolving.md)
-
----
-*[← Previous: Chapter 60 — The TrueTime & Distributed Clock Rollout Pattern](./chapter-60-truetime-distributed-clock.md) |
-[→ Next: Chapter 62 — The Agentic CI/CD & Self-Evolving Infrastructure Pattern](./chapter-62-agentic-cicd-self-evolving.md)*

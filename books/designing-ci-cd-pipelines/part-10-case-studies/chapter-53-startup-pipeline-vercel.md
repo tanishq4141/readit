@@ -129,9 +129,3 @@ The lesson is not "build like Vercel" — it's "invest in your pipeline with the
 Vercel's pipeline is instructive because the feedback loop is tight: their internal deployment speed directly affects their product quality. The specific technologies (Turborepo, V8 isolates, edge-native deployment) are less important than the principles: build caching as a foundation for all other performance improvements, preview environments as a baseline developer experience, immutable artifacts as the deployment primitive, and the pipeline as a product with users and requirements.
 
 The most actionable lesson for startups: implement preview deployments and a remote build cache on day one, before the codebase grows to the size where retrofitting them is painful. Both are available in open-source form (Turborepo for JavaScript, Bazel for polyglot) and both have a similar ROI profile: small investment, compounding returns over the lifetime of the product.
-
-[→ Next: Chapter 54 — The Enterprise Microservices Pipeline: How Netflix Delivers](./chapter-54-enterprise-pipeline-netflix.md)
-
----
-*[← Previous: Chapter 52 — The Chaos-Driven Deployment Pattern](../part-09-planetary-scale/chapter-52-chaos-driven-deployment.md) |
-[→ Next: Chapter 54 — The Enterprise Microservices Pipeline: How Netflix Delivers](./chapter-54-enterprise-pipeline-netflix.md)*

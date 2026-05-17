@@ -214,9 +214,3 @@ def get_time_with_uncertainty() -> tuple[float, float]:
 ## Chapter Summary
 
 TrueTime is the solution to a problem most engineering organizations don't have: globally consistent real-time coordination with sub-millisecond guarantees. For organizations that do have it — financial exchanges, globally coordinated billing changes, multi-region database schema coordination — the architecture (GPS + atomic clocks + bounded uncertainty API) is the only principled solution. For most deployment scenarios, NTP with chrony and AWS Time Sync Service provides sufficient accuracy. The discipline is recognizing which category your use case falls into before assuming the simpler answer is adequate.
-
-[→ Next: Chapter 61 — The eBPF & Kernel-Bypass Traffic Shaping Pattern](./chapter-61-ebpf-kernel-bypass.md)
-
----
-*[← Previous: Chapter 59 — The Carbon-Aware & Energy-Routed Deployment Pattern](./chapter-59-carbon-aware-deployment.md) |
-[→ Next: Chapter 61 — The eBPF & Kernel-Bypass Traffic Shaping Pattern](./chapter-61-ebpf-kernel-bypass.md)*

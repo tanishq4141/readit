@@ -511,9 +511,3 @@ The controversial take: most organizations are running security scans in the wro
 ## What's Next
 
 Chapter 7 addresses a different efficiency problem: even with fan-out parallelism, running the full test suite on every commit is wasteful when a change only affects a small fraction of the codebase. The Test Impact Analysis pattern maps code changes to the subset of tests that actually cover that code — eliminating redundant test execution without reducing coverage confidence.
-
-[→ Next: Chapter 7 — The Test Impact Analysis (TIA) Pattern](./chapter-07-test-impact-analysis.md)
-
----
-*[← Previous: Chapter 5 — The Build Cache & Fan-Out Pattern](./chapter-05-build-cache-fan-out.md) |
-[→ Next: Chapter 7 — The Test Impact Analysis (TIA) Pattern](./chapter-07-test-impact-analysis.md)*

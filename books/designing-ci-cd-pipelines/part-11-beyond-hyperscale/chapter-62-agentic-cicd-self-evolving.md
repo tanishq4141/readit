@@ -254,9 +254,3 @@ Regardless of how capable LLMs become:
 Agentic CI/CD is real, useful, and deployed in production today — in the advisory role. LLMs accelerate failure triage, generate pipeline configuration, and summarize incident analysis faster than any human can. These are high-value, production-safe applications with clear blast radius limits.
 
 Autonomous pipeline modification without human review is not safe or reliable with current LLM capabilities. The failure modes are subtle (security regressions, context blindness), the blast radius is high (affects all deployments through the pipeline), and the "test suite" for pipeline correctness is production. The architecture that's right for today: LLMs as fast, tireless advisors; humans as the decision-makers for production-affecting actions.
-
-[→ Next: Chapter 63 — The Confidential Computing & Zero-Trust Enclave Pattern](./chapter-63-confidential-computing-enclave.md)
-
----
-*[← Previous: Chapter 61 — The eBPF & Kernel-Bypass Traffic Shaping Pattern](./chapter-61-ebpf-kernel-bypass.md) |
-[→ Next: Chapter 63 — The Confidential Computing & Zero-Trust Enclave Pattern](./chapter-63-confidential-computing-enclave.md)*

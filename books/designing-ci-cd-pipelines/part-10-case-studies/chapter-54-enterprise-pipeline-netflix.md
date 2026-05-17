@@ -138,9 +138,3 @@ Netflix's architecture is widely cited and sometimes uncritically copied. Two th
 Netflix's deployment architecture is the most thoroughly documented enterprise microservices pipeline in the industry. The key insights are architectural (multi-region bake time, automated canary analysis, continuous chaos) and organizational (the paved road, freedom and responsibility). Both dimensions are necessary: the best pipeline tooling in the world doesn't produce Netflix's outcomes without the organizational accountability model, and the right culture produces fragile systems without the engineering investment.
 
 The takeaway for enterprise engineering organizations: invest in the shared platform (the paved road) before requiring teams to build their own. The amortization economics are compelling. A team that ships on the paved road contributes to and benefits from every improvement made to it. A team that ships on a hand-crafted pipeline is an island.
-
-[→ Next: Chapter 55 — The Regulated & Air-Gapped Pipeline: How Capital One Deploys](./chapter-55-regulated-airgapped-capital-one.md)
-
----
-*[← Previous: Chapter 53 — The Startup Pipeline: How Vercel Ships](./chapter-53-startup-pipeline-vercel.md) |
-[→ Next: Chapter 55 — The Regulated & Air-Gapped Pipeline: How Capital One Deploys](./chapter-55-regulated-airgapped-capital-one.md)*

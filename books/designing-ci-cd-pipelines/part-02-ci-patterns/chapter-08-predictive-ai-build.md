@@ -622,9 +622,3 @@ Invest in telemetry first. You cannot build predictive systems on data you haven
 ## What's Next
 
 Chapter 9 addresses the infrastructure that all of Part II's patterns run on: dynamic provisioning. On-demand runners that spin up per-job and tear down after, Kubernetes-based CI infrastructure that scales with demand, and the economics of warm pools vs. scale-to-zero. If the patterns in Chapters 3–8 are the CI strategy, Chapter 9 is the CI substrate.
-
-[→ Next: Chapter 9 — The Dynamic Provisioning Pattern](./chapter-09-dynamic-provisioning.md)
-
----
-*[← Previous: Chapter 7 — The Test Impact Analysis (TIA) Pattern](./chapter-07-test-impact-analysis.md) |
-[→ Next: Chapter 9 — The Dynamic Provisioning Pattern](./chapter-09-dynamic-provisioning.md)*

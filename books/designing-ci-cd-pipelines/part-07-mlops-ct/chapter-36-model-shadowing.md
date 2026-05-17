@@ -219,9 +219,3 @@ When the checklist passes, promote to 1% canary traffic (not 100% — this is ML
 ## Chapter Summary
 
 Model shadowing is the ML equivalent of application shadow deployment (Chapter 22): validate the new version against real production traffic before any user sees its outputs. The key difference from application shadowing is the analysis layer: ML shadow analysis must segment by user characteristics and context to catch the non-representative test set problem that plagued the Cascade Media team. Two weeks of shadow data across all user segments is the right investment before a canary that affects real engagement metrics.
-
-[→ Next: Chapter 37 — The ML Data Lineage & Provenance Pattern](./chapter-37-ml-data-lineage.md)
-
----
-*[← Previous: Chapter 35 — The Model Champion/Challenger Pattern](./chapter-35-model-champion-challenger.md) |
-[→ Next: Chapter 37 — The ML Data Lineage & Provenance Pattern](./chapter-37-ml-data-lineage.md)*

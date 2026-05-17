@@ -449,9 +449,3 @@ The hybrid model is the production reality: pull for Kubernetes environments, OI
 ## What's Next
 
 Chapter 11 formalizes pull-based deployment into the GitOps pattern — the complete operational model where Git is the single source of truth for all production state. It covers Argo CD and Flux in implementation depth, the specific sync strategies and health check configurations that make GitOps reliable, and the GitOps anti-patterns that undermine the model's guarantees.
-
-[→ Next: Chapter 11 — The GitOps Pattern](./chapter-11-gitops.md)
-
----
-*[← Previous: Chapter 9 — The Dynamic Provisioning Pattern](../part-02-ci-patterns/chapter-09-dynamic-provisioning.md) |
-[→ Next: Chapter 11 — The GitOps Pattern](./chapter-11-gitops.md)*

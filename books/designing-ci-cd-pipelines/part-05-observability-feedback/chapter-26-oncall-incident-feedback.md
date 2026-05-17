@@ -502,9 +502,3 @@ Deployment freezes are the reactive complement: when the pipeline can't protect 
 Part V is complete. The observability and feedback loops are wired in: SLO-based gating (Chapter 23) blocks deployments when reliability is at risk, DORA metrics (Chapter 24) measure pipeline output and drive improvement, deployment observability (Chapter 25) correlates deploys to metric changes, and incident-driven feedback (Chapter 26) converts production failures into pipeline evolution.
 
 Part VI moves into specialized delivery environments: database schema evolution, infrastructure-as-code promotion, serverless deployments, edge computing, multi-region active-active, and mobile release trains — the deployment patterns that general-purpose CD pipelines don't handle.
-
-[→ Next: Chapter 27 — The Expand-and-Contract Database Migration Pattern](../part-06-cloud-data-edge/chapter-27-expand-contract-db-migration.md)
-
----
-*[← Previous: Chapter 25 — The Deployment Observability & Correlation Pattern](./chapter-25-deployment-observability.md) |
-[→ Next: Chapter 27 — The Expand-and-Contract Database Migration Pattern](../part-06-cloud-data-edge/chapter-27-expand-contract-db-migration.md)*

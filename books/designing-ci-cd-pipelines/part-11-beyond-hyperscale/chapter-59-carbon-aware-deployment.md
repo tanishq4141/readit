@@ -177,7 +177,6 @@ async def get_best_region_for_training_job(
     
     return best.location
 
-
 async def schedule_batch_build(
     build_duration_hours: float,
     hard_deadline: datetime,
@@ -306,9 +305,3 @@ The lowest-carbon region may not be an approved region for your data. GDPR, HIPA
 ## Chapter Summary
 
 Carbon-aware deployment is the scheduling dimension that minimizes the environmental cost of compute without reducing its effectiveness. For the class of workloads with timing flexibility — nightly builds, ML training, batch processing — temporal and spatial shifting can reduce carbon emissions by 50–90% at zero impact to delivery quality. The infrastructure (WattTime API, Green Software Foundation SDK) is production-ready today. The primary barrier is the engineering investment to integrate it into scheduling systems and the organizational prioritization to make it a pipeline requirement.
-
-[→ Next: Chapter 60 — The TrueTime & Distributed Clock Rollout Pattern](./chapter-60-truetime-distributed-clock.md)
-
----
-*[← Previous: Chapter 58 — The Formally Verified Release Pattern](./chapter-58-formally-verified-release.md) |
-[→ Next: Chapter 60 — The TrueTime & Distributed Clock Rollout Pattern](./chapter-60-truetime-distributed-clock.md)*

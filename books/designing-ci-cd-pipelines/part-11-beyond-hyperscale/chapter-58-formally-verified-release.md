@@ -248,9 +248,3 @@ Liveness properties require fairness assumptions (that actions enabled eventuall
 ## Chapter Summary
 
 Formal verification with TLA+ converts deployment protocol correctness from "we believe it's correct" to "we have proved it's correct under all possible execution sequences." The investment is significant but finite: a production-quality TLA+ spec for a canary deployment protocol takes 2–4 weeks of an experienced engineer's time. The return is the class of correctness guarantees that testing cannot provide.
-
-[→ Next: Chapter 59 — The Carbon-Aware & Energy-Routed Deployment Pattern](./chapter-59-carbon-aware-deployment.md)
-
----
-*[← Previous: Chapter 57 — From IDE to Planet-Scale: A Synthesis](../part-10-case-studies/chapter-57-ide-to-planet-scale-synthesis.md) |
-[→ Next: Chapter 59 — The Carbon-Aware & Energy-Routed Deployment Pattern](./chapter-59-carbon-aware-deployment.md)*

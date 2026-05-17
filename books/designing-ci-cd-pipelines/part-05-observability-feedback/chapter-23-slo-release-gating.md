@@ -117,7 +117,6 @@ class SLOState:
         # See implementation below
         raise NotImplementedError
 
-
 def get_slo_state_from_prometheus(
     service: str,
     prometheus_url: str,
@@ -152,7 +151,6 @@ def get_slo_state_from_prometheus(
         current_availability=current_availability
     )
 
-
 def get_burn_rate(service: str, prometheus_url: str, window: str = "1h") -> float:
     """
     Calculate the current burn rate over the specified window.
@@ -181,7 +179,6 @@ def get_burn_rate(service: str, prometheus_url: str, window: str = "1h") -> floa
     if not result:
         return 0.0
     return float(result[0]["value"][1])
-
 
 def evaluate_deployment_gate(
     service: str,
@@ -544,9 +541,3 @@ The gate is a Prometheus or Datadog query on error budget remaining, evaluated b
 ## What's Next
 
 Chapter 24 turns the feedback loop around: instead of production metrics flowing back into deployment decisions, the pipeline itself emits metrics that measure its own performance. DORA metrics — Deployment Frequency, Lead Time, Change Failure Rate, MTTR — describe how well the pipeline is serving its organization, and the right way to use them is as a feedback signal for pipeline improvement, not as a management dashboard.
-
-[→ Next: Chapter 24 — The DORA Metrics Pipeline Feedback Pattern](./chapter-24-dora-metrics-feedback.md)
-
----
-*[← Previous: Chapter 22 — The Shadow Deployment Pattern](../part-04-progressive-delivery/chapter-22-shadow-deployment.md) |
-[→ Next: Chapter 24 — The DORA Metrics Pipeline Feedback Pattern](./chapter-24-dora-metrics-feedback.md)*

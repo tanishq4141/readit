@@ -337,9 +337,3 @@ Part IX is complete. The planetary-scale patterns — merge queues, configuratio
 ## What's Next
 
 Part X moves from patterns to case studies: how Vercel, Netflix, Capital One, and Google actually implement these patterns in production — the specific architectural decisions, the war stories, and the lessons that only come from operating at scale.
-
-[→ Next: Chapter 53 — The Startup Pipeline: How Vercel Ships](../part-10-case-studies/chapter-53-startup-pipeline-vercel.md)
-
----
-*[← Previous: Chapter 51 — The Automated Canary Analysis (ACA) Pattern](./chapter-51-automated-canary-analysis.md) |
-[→ Next: Chapter 53 — The Startup Pipeline: How Vercel Ships](../part-10-case-studies/chapter-53-startup-pipeline-vercel.md)*

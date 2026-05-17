@@ -346,9 +346,3 @@ For fraud detection (the Veritas case), automated retraining should produce a st
 ## Chapter Summary
 
 Continuous Training is not a feature — it's the acknowledgment that deployed ML models have a decay rate. The world changes. The model's training distribution becomes stale. The trigger mechanism determines how quickly the pipeline responds. Scheduled triggers are simple but lag behind reality. Performance degradation triggers close the feedback loop automatically but require real-time label ingestion. Data drift triggers (Chapter 39) close the loop earlier — before performance degrades visibly. The right answer is usually a combination: drift detection as the early warning, performance thresholds as the hard gate.
-
-[→ Next: Chapter 34 — The Feature Store Synchronization Pattern](./chapter-34-feature-store-sync.md)
-
----
-*[← Previous: Chapter 32 — The Mobile Release Train Pattern](../part-06-cloud-data-edge/chapter-32-mobile-release-train.md) |
-[→ Next: Chapter 34 — The Feature Store Synchronization Pattern](./chapter-34-feature-store-sync.md)*

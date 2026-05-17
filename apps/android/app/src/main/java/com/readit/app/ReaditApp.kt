@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -79,10 +80,19 @@ fun ReaditApp() {
 
     fun openChapter(slug: String, chapterId: String) {
         val encoded = Uri.encode(chapterId)
-        navController.navigate("read/$slug?chapterId=$encoded") {
-            popUpTo("book/$slug") { saveState = true }
-            launchSingleTop = true
-            restoreState = true
+        val route = "read/$slug?chapterId=$encoded"
+        val current = navController.currentBackStackEntry
+        val onReader = current?.destination?.route?.startsWith("read/") == true
+
+        navController.navigate(route) {
+            if (onReader) {
+                // Replace the current reader entry so chapterId actually updates (launchSingleTop alone does not).
+                popUpTo(current.destination.id) { inclusive = true }
+            } else {
+                popUpTo("book/$slug") { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
         }
     }
 
@@ -199,34 +209,36 @@ fun ReaditApp() {
                 ) { entry ->
                     val slug = entry.arguments?.getString("slug") ?: return@composable
                     val chapterId = entry.arguments?.getString("chapterId") ?: "intro"
-                    val index = repository.loadBookIndex(slug) ?: return@composable
 
-                    val flat = repository.flatChapters(index)
-                    val currentIndex = flat.indexOfFirst { it.id == chapterId }
-                    if (currentIndex < 0) return@composable
+                    key(chapterId) {
+                        val index = repository.loadBookIndex(slug) ?: return@key
+                        val flat = repository.flatChapters(index)
+                        val currentIndex = flat.indexOfFirst { it.id == chapterId }
+                        if (currentIndex < 0) return@key
 
-                    val chapter = flat[currentIndex]
-                    val markdown = try {
-                        repository.readChapter(chapter.assetPath)
-                    } catch (_: Exception) {
-                        return@composable
-                    }
-
-                    val prev: ChapterRef? = flat.getOrNull(currentIndex - 1)
-                    val next: ChapterRef? = flat.getOrNull(currentIndex + 1)
-
-                    LaunchedEffect(next?.assetPath) {
-                        val nextPath = next?.assetPath ?: return@LaunchedEffect
-                        if (sync.isEnabled()) {
-                            sync.ensureCached(nextPath)
+                        val chapter = flat[currentIndex]
+                        val markdown = try {
+                            repository.readChapter(chapter.assetPath)
+                        } catch (_: Exception) {
+                            return@key
                         }
-                    }
 
-                    ReaderScreen(
-                        markdown = markdown,
-                        onPrevious = prev?.let { { openChapter(slug, it.id) } },
-                        onNext = next?.let { { openChapter(slug, it.id) } },
-                    )
+                        val prev: ChapterRef? = flat.getOrNull(currentIndex - 1)
+                        val next: ChapterRef? = flat.getOrNull(currentIndex + 1)
+
+                        LaunchedEffect(next?.assetPath) {
+                            val nextPath = next?.assetPath ?: return@LaunchedEffect
+                            if (sync.isEnabled()) {
+                                sync.ensureCached(nextPath)
+                            }
+                        }
+
+                        ReaderScreen(
+                            markdown = markdown,
+                            onPrevious = prev?.let { { openChapter(slug, it.id) } },
+                            onNext = next?.let { { openChapter(slug, it.id) } },
+                        )
+                    }
                 }
             }
         }

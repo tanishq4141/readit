@@ -384,9 +384,3 @@ The fastest rollback is a feature flag kill switch — zero deployment time, tak
 ## What's Next
 
 Chapter 46 closes Part VIII with the supply chain security dimension: what guarantees do you have that the artifact you deployed is the one your CI pipeline built, and that no one tampered with it between build and deploy? Container image signing, SBOM generation, and SLSA provenance attestations are the controls that answer these questions.
-
-[→ Next: Chapter 46 — The Artifact Registry & Supply Chain Security Pattern](./chapter-46-artifact-registry-supply-chain.md)
-
----
-*[← Previous: Chapter 44 — The Break-Glass (Emergency Hotfix) Pattern](./chapter-44-break-glass-hotfix.md) |
-[→ Next: Chapter 46 — The Artifact Registry & Supply Chain Security Pattern](./chapter-46-artifact-registry-supply-chain.md)*

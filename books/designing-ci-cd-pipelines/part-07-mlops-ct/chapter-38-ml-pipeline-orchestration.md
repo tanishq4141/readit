@@ -309,7 +309,6 @@ class FraudDetectionTrainingFlow(FlowSpec):
     def end(self):
         print(f"Pipeline complete. Promotion recommended: {self.promotion_recommended}")
 
-
 if __name__ == "__main__":
     FraudDetectionTrainingFlow()
 ```
@@ -339,9 +338,3 @@ if __name__ == "__main__":
 ## Chapter Summary
 
 The model registry is the artifact registry for ML. Without it, you're copying `.pkl` files between S3 buckets and SSH servers with no version history, no rollback capability, and no audit trail. With it, every model version is immutable, the deployment state is queryable ("what's in production right now?"), and rollback is a registry stage transition — not a 3-hour retrain.
-
-[→ Next: Chapter 39 — The Data Drift Detection & Automated Retraining Pattern](./chapter-39-data-drift-retraining.md)
-
----
-*[← Previous: Chapter 37 — The ML Data Lineage & Provenance Pattern](./chapter-37-ml-data-lineage.md) |
-[→ Next: Chapter 39 — The Data Drift Detection & Automated Retraining Pattern](./chapter-39-data-drift-retraining.md)*

@@ -407,9 +407,3 @@ The design requirements are non-negotiable: fast by design, fully auditable, two
 ## What's Next
 
 Chapter 45 addresses what happens after a deployment goes wrong: the decision to rollback vs. roll-forward. The choice is never as simple as "just rollback" — stateful services, database migrations, and active API contracts can make the rollback itself more dangerous than the original failure.
-
-[→ Next: Chapter 45 — The Rollback & Roll-forward Patterns](./chapter-45-rollback-roll-forward.md)
-
----
-*[← Previous: Chapter 43 — The Pipeline-as-Code & Template Pattern](./chapter-43-pipeline-as-code-template.md) |
-[→ Next: Chapter 45 — The Rollback & Roll-forward Patterns](./chapter-45-rollback-roll-forward.md)*

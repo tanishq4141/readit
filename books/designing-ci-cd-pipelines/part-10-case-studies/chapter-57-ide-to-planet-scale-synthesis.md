@@ -239,9 +239,3 @@ The journey from a developer's IDE to production deployment is not a sequence of
 The maturity model is not prescriptive — it's descriptive of the order in which pain typically appears and the patterns that address each pain point. Start with the foundation, feel the pain that points to the next tier, invest precisely in the patterns that address that pain, and measure the result. That disciplined iteration is how Vercel, Netflix, Capital One, and Google all got where they are.
 
 The final three chapters (Part XI) go beyond the scale these case studies describe, into the frontier where formal verification, carbon-aware scheduling, eBPF-based traffic management, agentic automation, and confidential computing are reshaping what's possible at the edge of the discipline.
-
-[→ Next: Chapter 58 — The Formally Verified Release Pattern](../part-11-beyond-hyperscale/chapter-58-formally-verified-release.md)
-
----
-*[← Previous: Chapter 56 — The Global Hyper-Scale Pipeline: How Google Ships](./chapter-56-hyperscale-pipeline-google.md) |
-[→ Next: Chapter 58 — The Formally Verified Release Pattern](../part-11-beyond-hyperscale/chapter-58-formally-verified-release.md)*

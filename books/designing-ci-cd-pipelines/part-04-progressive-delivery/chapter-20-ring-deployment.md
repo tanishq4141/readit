@@ -362,9 +362,3 @@ The pattern's value is directly proportional to ring composition quality. A ring
 ## What's Next
 
 Chapter 21 covers the pattern that makes progressive delivery separable from deployment: Feature Flags. A feature flag allows you to ship code to production without activating its behavior — deployed dark, activated at the moment of your choice, for the users of your choice, with instant kill-switch capability that doesn't require a deployment to execute.
-
-[→ Next: Chapter 21 — The Feature Flag (Dark Launch) Pattern](./chapter-21-feature-flag-dark-launch.md)
-
----
-*[← Previous: Chapter 19 — The Rainbow Deployment Pattern](./chapter-19-rainbow-deployment.md) |
-[→ Next: Chapter 21 — The Feature Flag (Dark Launch) Pattern](./chapter-21-feature-flag-dark-launch.md)*

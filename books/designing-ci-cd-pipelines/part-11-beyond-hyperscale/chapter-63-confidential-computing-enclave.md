@@ -158,7 +158,6 @@ def get_attestation_document(nonce: bytes) -> bytes:
     )
     return response.attestation_doc
 
-
 def retrieve_secret_via_attestation(
     kms_key_id: str,
     encrypted_data_key: bytes,
@@ -186,7 +185,6 @@ def retrieve_secret_via_attestation(
     )
     
     return response['Plaintext']  # The decrypted data key, now available in enclave
-
 
 def main():
     """
@@ -367,8 +365,6 @@ Build the pipeline with those scars in mind. The ones you don't inherit, you wil
 *— BOOK_AUTHOR*
 
 ---
-
-*[← Previous: Chapter 62 — The Agentic CI/CD & Self-Evolving Infrastructure Pattern](./chapter-62-agentic-cicd-self-evolving.md)*
 
 ---
 

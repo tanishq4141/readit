@@ -351,9 +351,3 @@ The controversial take: **merge queues are not a substitute for trunk-based deve
 ## Chapter Summary
 
 The merge queue converts the speculative execution model of CPU branch prediction into a software delivery pattern: test the future state, not the current state. When PR B is added to the queue, it runs against main + all queued PRs — the state main will be in when B's turn comes. Semantic conflicts surface in the queue, not in production. At 340 engineers with 7 breaks per week and 45 minutes of lost productivity per break, the ROI calculation is not subtle.
-
-[→ Next: Chapter 48 — The Configuration-Decoupled Release Pattern](./chapter-48-config-decoupled-release.md)
-
----
-*[← Previous: Chapter 46 — The Artifact Registry & Supply Chain Security Pattern](../part-08-pipeline-architecture/chapter-46-artifact-registry-supply-chain.md) |
-[→ Next: Chapter 48 — The Configuration-Decoupled Release Pattern](./chapter-48-config-decoupled-release.md)*

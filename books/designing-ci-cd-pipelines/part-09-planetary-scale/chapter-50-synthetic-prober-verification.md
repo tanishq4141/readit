@@ -277,9 +277,3 @@ This is why the prober is used alongside, not instead of, canary analysis (Chapt
 ## Chapter Summary
 
 Synthetic probers are the deployment verification mechanism that validates the thing health checks can't: "does the actual user journey work, from the user's geographic and network perspective?" The Meridian Commerce incident — 47 minutes of invisible European checkout failure — is caught by a eu-west-1 prober that attempts a synthetic checkout and receives a 404. The prober fails. The deployment gate blocks advancement to the next cell. Root cause is found in minutes.
-
-[→ Next: Chapter 51 — The Automated Canary Analysis (ACA) Pattern](./chapter-51-automated-canary-analysis.md)
-
----
-*[← Previous: Chapter 49 — The Global Fractional Rollout & Cell Pattern](./chapter-49-global-fractional-rollout-cell.md) |
-[→ Next: Chapter 51 — The Automated Canary Analysis (ACA) Pattern](./chapter-51-automated-canary-analysis.md)*

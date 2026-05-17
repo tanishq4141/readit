@@ -341,9 +341,3 @@ Edge deployment is GitOps deployment with constrained resources and intermittent
 ## What's Next
 
 Chapter 31 moves from edge (many small devices) to cloud (multiple large regions). The Multi-Region Active-Active pattern covers deploying to geographically distributed regions simultaneously, with the cross-region data consistency constraints that turn a routine deployment into a distributed systems coordination problem.
-
-[→ Next: Chapter 31 — The Cloud-Native Multi-Region Active-Active Pattern](./chapter-31-multi-region-active-active.md)
-
----
-*[← Previous: Chapter 29 — The Serverless Cold-Start & Alias Pattern](./chapter-29-serverless-cold-start-alias.md) |
-[→ Next: Chapter 31 — The Cloud-Native Multi-Region Active-Active Pattern](./chapter-31-multi-region-active-active.md)*

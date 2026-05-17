@@ -604,9 +604,3 @@ Shadow deployment is not a substitute for canary — it's a prerequisite for hig
 Part IV is complete. The progressive delivery toolkit is now assembled: blue-green for atomic switching, canary for gradual percentage rollout, rainbow for multi-version concurrency, rings for segment-based rollout, feature flags for deployment-release decoupling, and shadow for pre-canary behavioral validation.
 
 Part V moves into observability and feedback loops — the mechanisms that make progressive delivery *self-aware*. Chapter 23 opens with SLO-Based Release Gating: using error budgets as automated deployment gates so that pipelines protect their own SLOs without requiring a human to read a dashboard and make a judgment call.
-
-[→ Next: Chapter 23 — The SLO-Based Release Gating Pattern](../part-05-observability-feedback/chapter-23-slo-release-gating.md)
-
----
-*[← Previous: Chapter 21 — The Feature Flag (Dark Launch) Pattern](./chapter-21-feature-flag-dark-launch.md) |
-[→ Next: Chapter 23 — The SLO-Based Release Gating Pattern](../part-05-observability-feedback/chapter-23-slo-release-gating.md)*

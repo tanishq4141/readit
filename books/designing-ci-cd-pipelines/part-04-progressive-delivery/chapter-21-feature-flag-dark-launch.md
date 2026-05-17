@@ -484,9 +484,3 @@ The infrastructure requirements are real: the flag service must be HA, monitored
 ## What's Next
 
 Chapter 22 covers Shadow Deployment — the pattern for validating a new service version against real production traffic without any impact on real users. Shadow deployments are the most rigorous pre-canary validation mechanism: every production request is duplicated to the new version, responses are compared, and discrepancies are logged — all without the new version ever affecting what users see.
-
-[→ Next: Chapter 22 — The Shadow Deployment Pattern](./chapter-22-shadow-deployment.md)
-
----
-*[← Previous: Chapter 20 — The Ring Deployment Pattern](./chapter-20-ring-deployment.md) |
-[→ Next: Chapter 22 — The Shadow Deployment Pattern](./chapter-22-shadow-deployment.md)*

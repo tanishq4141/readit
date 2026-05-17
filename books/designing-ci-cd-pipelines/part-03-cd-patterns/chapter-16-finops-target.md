@@ -579,9 +579,3 @@ The controversial take: the "move fast" philosophy that dominates startup cultur
 Part III is complete. You now have a CD architecture that spans the full deployment lifecycle: push vs. pull (Chapter 10), GitOps (Chapter 11), ephemeral environments (Chapter 12), environment promotion (Chapter 13), multi-service coordination (Chapter 14), large-scale refactoring (Chapter 15), and cost accountability (Chapter 16).
 
 Part IV moves into progressive delivery: the patterns for rolling out changes safely to fractions of production traffic. Chapter 17 opens with Blue-Green Deployment — the classic zero-downtime deployment pattern and, more usefully, the explanation of why "just flip the load balancer" is about 20% of the story.
-
-[→ Next: Chapter 17 — The Blue-Green Deployment Pattern](../part-04-progressive-delivery/chapter-17-blue-green-deployment.md)
-
----
-*[← Previous: Chapter 15 — The Branch by Abstraction Pattern](./chapter-15-branch-by-abstraction.md) |
-[→ Next: Chapter 17 — The Blue-Green Deployment Pattern](../part-04-progressive-delivery/chapter-17-blue-green-deployment.md)*

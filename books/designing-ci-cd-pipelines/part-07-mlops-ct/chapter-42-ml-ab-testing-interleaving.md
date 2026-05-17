@@ -130,7 +130,6 @@ class ExperimentConfig:
     power: float = 0.80
     minimum_days: int = 14     # Never run for less than 14 days
 
-
 RECOMMENDATION_EXPERIMENT = ExperimentConfig(
     name="new-recommendation-model-march",
     primary_metric="click_through_rate",
@@ -220,7 +219,6 @@ def team_draft_interleave(
     
     return interleaved[:n], item_assignment
 
-
 def evaluate_interleaving_result(
     clicks: list[str],  # Items that were clicked
     item_assignment: dict  # item_id → "A" or "B"
@@ -284,9 +282,3 @@ def evaluate_interleaving_result(
 ML A/B testing requires more statistical rigor than standard web A/B testing because of within-user correlation, novelty effects, and high-variance metrics. The minimum viable discipline: correct sample size calculation (with design effect), minimum 14-day test duration, and predefined guardrail metrics. For ranking models where test duration is a bottleneck, interleaving provides the same statistical power with 100-1000× fewer user-sessions — making model comparison practical at any traffic level.
 
 Part VII is complete. The MLOps lifecycle — from training triggers through feature stores, model evaluation, shadowing, lineage, orchestration, drift detection, GPU CI, LLM deployment, and A/B testing — covers the full arc of what it takes to operate ML models with the same rigor that software deployment applies to binaries.
-
-[→ Next: Chapter 43 — The Pipeline-as-Code & Template Pattern](../part-08-pipeline-architecture/chapter-43-pipeline-as-code-template.md)
-
----
-*[← Previous: Chapter 41 — The LLMOps & Foundation Model Deployment Pattern](./chapter-41-llmops-foundation-model.md) |
-[→ Next: Chapter 43 — The Pipeline-as-Code & Template Pattern](../part-08-pipeline-architecture/chapter-43-pipeline-as-code-template.md)*

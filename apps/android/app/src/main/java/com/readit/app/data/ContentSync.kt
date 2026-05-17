@@ -73,22 +73,24 @@ class ContentSync(
 
     suspend fun ensureCached(path: String) {
         if (!isEnabled()) return
-        val file = File(cacheRoot, path)
-        if (file.isFile) return
+        withContext(Dispatchers.IO) {
+            val file = File(cacheRoot, path)
+            if (file.isFile) return@withContext
 
-        val index = loadIndex()
-        val manifest = try {
-            fetchManifest()
-        } catch (_: Exception) {
-            return
+            val index = loadIndex()
+            val manifest = try {
+                fetchManifest()
+            } catch (_: Exception) {
+                return@withContext
+            }
+            val entry = manifest.files.find { it.path == path } ?: return@withContext
+            if (index.hashes[path] == entry.sha256 && file.isFile) return@withContext
+
+            downloadFiles(listOf(entry))
+            val updated = loadIndex().hashes.toMutableMap()
+            updated[path] = entry.sha256
+            saveIndex(ContentSyncIndex(manifest.version, updated))
         }
-        val entry = manifest.files.find { it.path == path } ?: return
-        if (index.hashes[path] == entry.sha256 && file.isFile) return
-
-        downloadFiles(listOf(entry))
-        val updated = loadIndex().hashes.toMutableMap()
-        updated[path] = entry.sha256
-        saveIndex(ContentSyncIndex(manifest.version, updated))
     }
 
     private fun fetchManifest(): ContentManifest {

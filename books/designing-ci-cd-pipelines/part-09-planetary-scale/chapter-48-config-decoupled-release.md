@@ -153,7 +153,6 @@ class AppConfigLoader:
         """Get a configuration value by key."""
         return self._config.get(key, default)
 
-
 # Initialize once at application startup
 config = AppConfigLoader(
     app_name="apex-analytics-api",
@@ -433,9 +432,3 @@ The key insight: **configuration rollback is faster than deployment rollback**. 
 ## Chapter Summary
 
 Configuration-decoupled releases separate the risk profile of "new binary" from "new behavior." The binary is the stable, tested unit; configuration is the live-fire control surface. At scale, the ability to change behavior without deploying code is not a convenience — it is the operational model that makes frequent deployment economical and that makes per-customer behavior variation practical without per-customer deployments.
-
-[→ Next: Chapter 49 — The Global Fractional Rollout & Cell Pattern](./chapter-49-global-fractional-rollout-cell.md)
-
----
-*[← Previous: Chapter 47 — The Merge Queue (Pre-Submit) Pattern](./chapter-47-merge-queue-pre-submit.md) |
-[→ Next: Chapter 49 — The Global Fractional Rollout & Cell Pattern](./chapter-49-global-fractional-rollout-cell.md)*

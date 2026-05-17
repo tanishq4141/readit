@@ -400,9 +400,3 @@ For teams that don't have contractual obligations to specific versions, the feat
 ## What's Next
 
 Chapter 20 covers Ring Deployment — the pattern Microsoft uses for Windows, Office, and Azure updates. Unlike canary (random percentage routing) and rainbow (version-specific routing), rings use user segment routing: internal dogfood, early adopter, general availability. The ring is defined by who the user is, not by what percentage of traffic they represent.
-
-[→ Next: Chapter 20 — The Ring Deployment Pattern](./chapter-20-ring-deployment.md)
-
----
-*[← Previous: Chapter 18 — The Canary Release Pattern](./chapter-18-canary-release.md) |
-[→ Next: Chapter 20 — The Ring Deployment Pattern](./chapter-20-ring-deployment.md)*

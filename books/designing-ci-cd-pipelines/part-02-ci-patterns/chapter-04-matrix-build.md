@@ -436,9 +436,3 @@ The controversial take: most teams test too few dimensions on PRs and have no ni
 ## What's Next
 
 Chapter 5 addresses the performance problem that the matrix build amplifies: how do you run many parallel build and test jobs quickly when each one starts from scratch? The Build Cache & Fan-Out Pattern covers remote build caching, dependency sharing across matrix dimensions, and the fan-out/fan-in model for parallelizing monorepo builds — turning a 47-minute serial build into a sub-10-minute parallel one.
-
-[→ Next: Chapter 5 — The Build Cache & Fan-Out Pattern](./chapter-05-build-cache-fan-out.md)
-
----
-*[← Previous: Chapter 3 — The Hermetic Build Pattern](./chapter-03-hermetic-build.md) |
-[→ Next: Chapter 5 — The Build Cache & Fan-Out Pattern](./chapter-05-build-cache-fan-out.md)*

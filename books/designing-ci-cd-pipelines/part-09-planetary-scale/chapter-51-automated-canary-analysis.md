@@ -154,7 +154,6 @@ def analyze_metric(
         score=score
     )
 
-
 def run_full_canary_analysis(
     canary_metrics: dict,    # {metric_name: [time_series_samples]}
     baseline_metrics: dict,
@@ -398,9 +397,3 @@ def calibrate_aca_thresholds(
 ## Chapter Summary
 
 Automated Canary Analysis is the control loop that makes canary deployments scalable. At 2,000 services, human-in-the-loop canary analysis is not a process — it's a staffing crisis. ACA moves the decision to statistics: Mann-Whitney U tests on time-series metrics, configurable weights for each metric, and a scoring system that produces pass/fail/inconclusive decisions. Kayenta is the reference implementation; the statistical principles are portable to any canary infrastructure.
-
-[→ Next: Chapter 52 — The Chaos-Driven Deployment Pattern](./chapter-52-chaos-driven-deployment.md)
-
----
-*[← Previous: Chapter 50 — The Synthetic Prober Verification Pattern](./chapter-50-synthetic-prober-verification.md) |
-[→ Next: Chapter 52 — The Chaos-Driven Deployment Pattern](./chapter-52-chaos-driven-deployment.md)*

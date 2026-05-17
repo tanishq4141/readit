@@ -410,9 +410,3 @@ Lambda deployments without alias management are binary: the new code either work
 ## What's Next
 
 Chapter 30 moves to the opposite end of the compute spectrum: edge devices with constrained bandwidth, intermittent connectivity, and no ability to accept a 3-second cold start because they're running point-of-sale systems in retail stores. GitOps at the edge adapts the pull-based deployment model for devices that may be offline for hours.
-
-[→ Next: Chapter 30 — The GitOps-at-the-Edge Pattern](./chapter-30-gitops-at-the-edge.md)
-
----
-*[← Previous: Chapter 28 — The IaC Promotion Pattern](./chapter-28-iac-promotion.md) |
-[→ Next: Chapter 30 — The GitOps-at-the-Edge Pattern](./chapter-30-gitops-at-the-edge.md)*

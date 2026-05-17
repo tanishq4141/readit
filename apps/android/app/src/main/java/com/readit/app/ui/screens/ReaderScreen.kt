@@ -53,7 +53,7 @@ fun ReaderScreen(
                 }
             },
             update = { webView ->
-                if (webView.progress == 100) {
+                if (webView.progress == 100 || webView.url != null) {
                     renderMarkdown(webView, markdownState.value)
                 }
             },

@@ -568,9 +568,3 @@ The one non-negotiable: ephemeral runners require explicit state management. Any
 ## What's Next
 
 Part III moves from CI (making code integrable and verifiable) to CD (making integrated code deployable). Chapter 10 opens with the foundational architectural question of deployment: should your pipeline *push* changes to the target environment, or should an agent in the target environment *pull* the desired state from a repository? The answer is not obvious, and the wrong choice at architectural decision time costs months of rework.
-
-[→ Next: Chapter 10 — The Push vs. Pull Deployment Pattern](../part-03-cd-patterns/chapter-10-push-vs-pull.md)
-
----
-*[← Previous: Chapter 8 — The Predictive & AI-Assisted Build Pattern](./chapter-08-predictive-ai-build.md) |
-[→ Next: Chapter 10 — The Push vs. Pull Deployment Pattern](../part-03-cd-patterns/chapter-10-push-vs-pull.md)*

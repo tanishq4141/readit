@@ -667,9 +667,3 @@ The three most important concrete actions: pin all base images by digest, commit
 ## What's Next
 
 Hermetic builds give you reproducibility. The Matrix Build Pattern (Chapter 4) gives you coverage: the ability to verify that a hermetic build produces correct artifacts across every platform, OS version, language runtime version, and architecture combination your users depend on. It also introduces the combinatorial explosion problem — and the strategies for managing it before your CI matrix becomes a runaway cost center.
-
-[→ Next: Chapter 4 — The Matrix Build Pattern](./chapter-04-matrix-build.md)
-
----
-*[← Previous: Chapter 2 — Core Principles](../part-01-principles/chapter-02-core-principles.md) |
-[→ Next: Chapter 4 — The Matrix Build Pattern](./chapter-04-matrix-build.md)*

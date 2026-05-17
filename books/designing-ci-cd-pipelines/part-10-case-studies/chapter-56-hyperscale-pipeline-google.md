@@ -152,9 +152,3 @@ For Chrome and Android — consumer products where "rolling back" means users ne
 Google's pipeline architecture is not replicable by most organizations — it required decades of investment and reflects constraints (2 billion lines of code, 40,000 daily changes, 2+ billion users) that most organizations will never face. But the principles it embodies are universal: hermetic builds, content-addressed caching, mechanical mainline protection, progressive canary deployment with statistical health evaluation, and dedicated ownership of the pipeline as infrastructure.
 
 The most actionable Google lesson: **the submit queue is the most underused pattern in this book**. Most organizations that practice trunk-based development experience broken mains regularly. The submit queue eliminates broken main mechanically. GitHub Merge Queue, Mergify, and GitLab Merge Trains make this accessible at any scale. The investment is one configuration change and a CI run; the return is a reliably green mainline.
-
-[→ Next: Chapter 57 — From IDE to Planet-Scale: A Synthesis](./chapter-57-ide-to-planet-scale-synthesis.md)
-
----
-*[← Previous: Chapter 55 — The Regulated & Air-Gapped Pipeline: How Capital One Deploys](./chapter-55-regulated-airgapped-capital-one.md) |
-[→ Next: Chapter 57 — From IDE to Planet-Scale: A Synthesis](./chapter-57-ide-to-planet-scale-synthesis.md)*

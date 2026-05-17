@@ -258,9 +258,3 @@ The decision framework:
 ## Chapter Summary
 
 The champion/challenger pattern ensures that production models only get replaced by provably better models. The statistical testing requirement prevents promoting models that appear better due to measurement noise. The representativeness requirement prevents the Solaris Media outcome: a model that looks better on the test set but is worse on production traffic. The CI gate implementation makes this evaluation automatic — every CT run either produces a better model or leaves the champion in place.
-
-[→ Next: Chapter 36 — The Model Shadowing Pattern](./chapter-36-model-shadowing.md)
-
----
-*[← Previous: Chapter 34 — The Feature Store Synchronization Pattern](./chapter-34-feature-store-sync.md) |
-[→ Next: Chapter 36 — The Model Shadowing Pattern](./chapter-36-model-shadowing.md)*

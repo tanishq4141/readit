@@ -235,7 +235,6 @@ def compile_model_for_inference(
     
     return output_trt_path
 
-
 # CI gate: verify the TensorRT engine produces the same results as PyTorch
 def validate_trt_engine(pytorch_model, trt_engine_path, test_inputs, tolerance=1e-3):
     """Verify TensorRT engine is numerically consistent with PyTorch model."""
@@ -285,9 +284,3 @@ def validate_trt_engine(pytorch_model, trt_engine_path, test_inputs, tolerance=1
 ## Chapter Summary
 
 GPU-aware CI is the recognition that CPU simulation of GPU operations is insufficient for validating models that will serve on GPU hardware. Numerical differences in edge cases (NaN handling, FP16 rounding, CUDA operation semantics) only surface when running on the target hardware. The GPU CI pipeline must use the same CUDA version, the same cuDNN version, and the same compilation toolchain as production. Cost management (spot instances, CPU-first testing, GPU tests only on main) keeps the economics viable.
-
-[→ Next: Chapter 41 — The LLMOps & Foundation Model Deployment Pattern](./chapter-41-llmops-foundation-model.md)
-
----
-*[← Previous: Chapter 39 — The Data Drift Detection & Automated Retraining Pattern](./chapter-39-data-drift-retraining.md) |
-[→ Next: Chapter 41 — The LLMOps & Foundation Model Deployment Pattern](./chapter-41-llmops-foundation-model.md)*
