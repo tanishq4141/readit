@@ -83,7 +83,9 @@ web:build:
       - node_modules/
       - apps/web/node_modules/
   script:
-    - npm ci
+    # Lockfile may be updated on macOS; ensure Linux native bindings exist for Tailwind/lightningcss.
+    - npm ci --include=optional
+    - npm install -w web --include=optional --no-save lightningcss-linux-x64-gnu@1.32.0
     - npm run build:web
   artifacts:
     name: "readit-web-${CI_COMMIT_SHORT_SHA}"
