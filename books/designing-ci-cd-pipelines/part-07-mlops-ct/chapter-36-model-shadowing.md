@@ -169,15 +169,19 @@ def generate_shadow_analysis_report(
 
 ## Shadow-to-Canary Graduation Criteria
 
-```
-Shadow graduation checklist:
-□ Minimum 7 days of shadow data collected
-□ Overall divergence rate within expected bounds (<30% significant differences)
-□ No flagged segments with divergence >15pp below overall
-□ Shadow error rate not significantly higher than champion error rate
-□ Known differences explained and accepted (documented in model card)
-□ Champion/challenger offline evaluation passed (Chapter 35)
-□ ML team sign-off on shadow report
+```mermaid
+flowchart TD
+  G["Shadow graduation checklist"] --> C1["≥ 7 days of shadow data"]
+  G --> C2["Divergence rate within bounds<br/>(&lt;30% significant differences)"]
+  G --> C3["No segment &gt;15pp worse than overall"]
+  G --> C4["Shadow error rate ≈ champion"]
+  G --> C5["Known diffs documented in model card"]
+  G --> C6["Offline champion/challenger passed (Ch. 35)"]
+  G --> C7["ML team sign-off on shadow report"]
+  C1 & C2 & C3 & C4 & C5 & C6 & C7 --> GO["Promote to 1% canary traffic"]
+
+  style G fill:#0f3460,color:#ffffff
+  style GO fill:#1a472a,color:#ffffff
 ```
 
 When the checklist passes, promote to 1% canary traffic (not 100% — this is ML deployment, always start with canary after shadow).

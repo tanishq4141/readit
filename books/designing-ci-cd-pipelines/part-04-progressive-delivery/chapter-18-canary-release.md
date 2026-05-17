@@ -42,18 +42,19 @@ But there's a detail in this story worth examining: the team advanced from 5% to
 
 A canary release exposes the new version (the canary) to a controlled percentage of production traffic while the old version (the baseline) serves the remainder. The traffic percentage increases through predefined steps with dwell periods between steps:
 
-```
-Time ──────────────────────────────────────────────────────────────▶
+```mermaid
+flowchart LR
+    P0["0%"] --> P1["1%<br/>◀ 30 min dwell ▶<br/>Health checks"]
+    P1 --> P5["5%<br/>◀ 1 hour dwell ▶<br/>Health checks"]
+    P5 --> P25["25%<br/>◀ 2 hours dwell ▶<br/>Health checks"]
+    P25 --> P100["100%"]
 
-0%     1%                5%                  25%              100%
-│──────┼─────────────────┼────────────────────┼────────────────┼───
-       │◀── 30 min ─────▶│◀────── 1 hour ─────▶│◀── 2 hours ───▶│
-       │                 │                    │
-       Health checks     Health checks       Health checks
-       at each step      at each step        at each step
-       
-If health fails at ANY step: rollback to 0% immediately
-If health passes at ALL steps: advance to next step
+    P1 -.->|"health fails"| RB["Rollback to 0% immediately"]
+    P5 -.->|"health fails"| RB
+    P25 -.->|"health fails"| RB
+
+    style P100 fill:#1a472a,color:#ffffff
+    style RB fill:#8b0000,color:#ffffff
 ```
 
 The dwell time at each step is not arbitrary. It must be long enough for:

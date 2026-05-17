@@ -38,47 +38,22 @@ The fix isn't a better postmortem template. It's a process that connects inciden
 
 The loop that doesn't exist at Vertex Analytics but should:
 
-```
-Production Incident
-        │
-        ▼
-Incident Response
-(resolve the immediate problem)
-        │
-        ▼
-Blameless Postmortem
-(understand root cause, timeline, contributing factors)
-        │
-        ▼
-Root Cause Classification
-(which category does this belong to? See taxonomy below)
-        │
-        ▼
-Pipeline Change Specification
-(specific, concrete, verifiable: not "add tests" but
-"add contract test verifying pricing-service response format
-in the payment-service CI pipeline")
-        │
-        ▼
-Sprint Assignment
-(the pipeline change goes into the next sprint backlog,
-owned by a specific engineer, with a specific acceptance criterion)
-        │
-        ▼
-Implementation + Verification
-(the pipeline change is implemented and verified in CI;
-the acceptance criterion is tested)
-        │
-        ▼
-Postmortem Closed
-(the action item is closed only when the pipeline change
-is merged and verified — not when the Jira ticket is created)
-        │
-        ▼
-Recurrence Monitoring
-(if the same root cause class occurs again, the postmortem
-immediately references the prior incident and asks:
-"why didn't the previous pipeline change prevent this?")
+```mermaid
+flowchart TD
+    I1["Production Incident"]
+    I2["Incident Response<br/>Resolve the immediate problem"]
+    I3["Blameless Postmortem<br/>Root cause, timeline, contributing factors"]
+    I4["Root Cause Classification<br/>Which category? See taxonomy below"]
+    I5["Pipeline Change Specification<br/>Specific, concrete, verifiable — not 'add tests'"]
+    I6["Sprint Assignment<br/>Owned engineer + acceptance criterion"]
+    I7["Implementation + Verification<br/>Merged and verified in CI"]
+    I8["Postmortem Closed<br/>Only when pipeline change is live — not when Jira ticket opens"]
+    I9["Recurrence Monitoring<br/>Same root cause? Ask why prior pipeline change didn't prevent it"]
+
+    I1 --> I2 --> I3 --> I4 --> I5 --> I6 --> I7 --> I8 --> I9
+
+    style I1 fill:#8b0000,color:#ffffff
+    style I8 fill:#1a472a,color:#ffffff
 ```
 
 The key discipline: postmortem action items must be expressed as pipeline changes, not organizational recommendations.

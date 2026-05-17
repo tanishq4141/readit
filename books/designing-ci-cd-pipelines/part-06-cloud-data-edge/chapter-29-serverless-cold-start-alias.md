@@ -42,22 +42,26 @@ Every Lambda deployment publishes a new immutable version. Versions are numbered
 
 An **alias** is a pointer to a specific version. Aliases can be updated to point at a new version — this is how a Lambda "deployment" works. Aliases support weighted routing: 90% to version 5, 10% to version 6.
 
-```
-Lambda Architecture:
+```mermaid
+flowchart TB
+    subgraph fn["function: payment-processor"]
+        V1["Version :1 — old, immutable"]
+        V2["Version :2 — current stable, immutable"]
+        V3["Version :3 — new, just published, immutable"]
+    end
 
-function:payment-processor
-├── Version :1 (old, immutable)
-├── Version :2 (current stable, immutable)
-└── Version :3 (new, just published, immutable)
+    subgraph aliases["Aliases"]
+        Stable["stable → Version :2<br/>95% traffic via weighted routing"]
+        Canary["canary → Version :3<br/>5% traffic"]
+        Latest["latest → $LATEST<br/>development only — never in production"]
+    end
 
-Aliases:
-├── stable → Version :2 (100% of traffic)
-├── canary → Version :3 (5% of traffic routed here via weighted routing on "stable")
-└── latest → $LATEST (development only, never use in production)
+    V2 --> Stable
+    V3 --> Canary
 
-Traffic distribution (configured on "stable" alias):
-  - Version :2: 95%
-  - Version :3: 5%
+    style V2 fill:#1a472a,color:#ffffff
+    style V3 fill:#0f3460,color:#ffffff
+    style Latest fill:#8b0000,color:#ffffff
 ```
 
 ---

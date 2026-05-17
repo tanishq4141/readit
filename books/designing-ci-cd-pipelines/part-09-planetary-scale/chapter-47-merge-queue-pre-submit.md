@@ -43,19 +43,40 @@ The fix is not a cultural intervention ("be more careful about merging") — cul
 A merge queue addresses *semantic conflicts* — conflicts that pass independent CI but fail when combined. These are distinct from *syntactic conflicts* (Git merge conflicts that prevent automated merging) which are visible before CI runs.
 
 Without a merge queue:
-```
-Time →
-PR A (tests green on main@t0) ──────────────────▶ merges to main@t1
-PR B (tests green on main@t0) ──────────────────▶ merges to main@t1+1s
-                                                      ↑ main breaks here
+
+```mermaid
+flowchart LR
+    subgraph Without["Without merge queue"]
+        direction TB
+        PA["PR A (tests green on main@t0)"]
+        PB["PR B (tests green on main@t0)"]
+        M1["merges to main@t1"]
+        M2["merges to main@t1+1s<br/>main breaks here"]
+        PA --> M1
+        PB --> M2
+    end
+
+    style M2 fill:#533483,color:#ffffff
 ```
 
 With a merge queue:
-```
-Time →
-PR A enters queue ─────▶ CI on (main + PR A) ─────▶ green ─────▶ merges to main@t1
-PR B enters queue ─────▶ CI on (main + PR A + PR B) ─▶ green ─▶ merges to main@t2
-                              ↑ semantic conflict detected here, before main
+
+```mermaid
+flowchart LR
+    subgraph With["With merge queue"]
+        direction TB
+        QA["PR A enters queue"]
+        QB["PR B enters queue"]
+        CIA["CI on (main + PR A)"]
+        CIB["CI on (main + PR A + PR B)<br/>semantic conflict detected here, before main"]
+        GA["green → merges to main@t1"]
+        GB["green → merges to main@t2"]
+        QA --> CIA --> GA
+        QB --> CIB --> GB
+        CIA -.-> CIB
+    end
+
+    style CIB fill:#1a472a,color:#ffffff
 ```
 
 The merge queue tests each PR's merge result against the queue's projected future state, not the current main branch. When PR B is tested, it runs against main + PR A — the state that main will be in when PR A merges. If that combined test fails, PR B is ejected from the queue (and must be fixed) before it can merge.

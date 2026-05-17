@@ -179,34 +179,37 @@ The migration for all 340 models takes the same 10 weeks. But instead of 47,000 
 
 Branch by Abstraction scales up to service-level changes via the Strangler Fig pattern. The "strangler fig" — a tree that grows around a host tree and eventually replaces it — is the metaphor for extracting a service from a monolith without a big-bang cutover.
 
-```
-Step 1: New service exists but receives 0% of traffic.
-         Monolith handles all requests.
+```mermaid
+flowchart TB
+    subgraph s1["Step 1 — 0% traffic to new service"]
+        M1[Monolith] -->|all /pricing/*| PDB1[(Pricing DB)]
+    end
 
-Monolith ──── handles all /pricing/* requests ────▶ Pricing DB
+    subgraph s2["Step 2 — route new requests; shared DB"]
+        Req2[Request] --> New2[New Pricing Service]
+        Req2 --> Mono2[Monolith — existing pricing]
+        New2 --> PDB2[(Pricing DB — shared)]
+        Mono2 --> PDB2
+    end
 
-Step 2: Route new requests to the new service.
-         Existing requests still go to the monolith.
-         New service reads from the monolith's DB initially.
+    subgraph s3["Step 3 — gradual traffic shift"]
+        Req3[Request] -->|10%| New3[New Pricing Service]
+        Req3 -->|90%| Mono3[Monolith]
+    end
 
-                    ┌───▶ New Pricing Service ──▶ Pricing DB (shared)
-Request ───────────┤
-                    └───▶ Monolith (existing pricing code) ──▶ Pricing DB
+    subgraph s4["Step 4 — 100% on new service"]
+        Req4[Request] -->|100%| New4[New Pricing Service] --> NPDB[(New Pricing DB — migrated)]
+        Mono4[Monolith — pricing code inactive]
+    end
 
-Step 3: Gradually shift traffic to the new service.
-         Monitor for correctness and performance parity.
+    subgraph s5["Step 5 — delete monolith pricing code"]
+        S5[Remove pricing code from monolith]
+    end
 
-Request ──── 10% ──▶ New Pricing Service
-         └── 90% ──▶ Monolith
+  s1 --> s2 --> s3 --> s4 --> s5
 
-Step 4: New service handles 100% of traffic.
-         Monolith pricing code remains but is inactive.
-         New service has its own DB (migrated data).
-
-Request ──── 100% ──▶ New Pricing Service ──▶ New Pricing DB (migrated)
-         Monolith still exists (pricing code inactive)
-
-Step 5: Delete the monolith's pricing code.
+    style New4 fill:#1a472a,color:#ffffff
+    style Mono4 fill:#0f3460,color:#ffffff
 ```
 
 Implementation with an Nginx/Envoy proxy:

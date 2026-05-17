@@ -13,7 +13,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,30 +47,74 @@ fun ReaditApp() {
 
     fun openChapter(slug: String, chapterId: String) {
         val encoded = Uri.encode(chapterId)
-        navController.navigate("read/$slug?chapterId=$encoded")
+        navController.navigate("read/$slug?chapterId=$encoded") {
+            popUpTo("book/$slug") { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    fun navigateBack() {
+        val entry = navController.currentBackStackEntry ?: return
+        val route = entry.destination.route ?: return
+        when {
+            route.startsWith("read/") -> {
+                val slug = entry.arguments?.getString("slug") ?: return
+                navController.popBackStack("book/$slug", inclusive = false)
+            }
+            route.startsWith("book/") -> {
+                navController.popBackStack("catalog", inclusive = false)
+            }
+            else -> navController.popBackStack()
+        }
     }
 
     ReaditTheme {
+        val backStackEntry by navController.currentBackStackEntryAsState()
+        val route = backStackEntry?.destination?.route
+
         Scaffold(
             topBar = {
-                val route = navController.currentBackStackEntry?.destination?.route
                 if (route != null && route != "catalog") {
+                    val title = when {
+                        route.startsWith("read/") -> {
+                            val slug = backStackEntry?.arguments?.getString("slug")
+                            val chapterId = backStackEntry?.arguments?.getString("chapterId")
+                            if (slug != null && chapterId != null) {
+                                repository.loadBookIndex(slug)
+                                    ?.let { index ->
+                                        repository.flatChapters(index)
+                                            .find { it.id == chapterId }
+                                            ?.title
+                                    }
+                            } else null
+                        }
+                        route.startsWith("book/") -> {
+                            backStackEntry?.arguments?.getString("slug")
+                                ?.let { repository.loadBookIndex(it)?.meta?.title }
+                        }
+                        else -> null
+                    } ?: "Readit"
+
                     TopAppBar(
                         title = {
                             Text(
-                                text = when {
-                                    route?.startsWith("book/") == true -> "Readit"
-                                    route?.startsWith("read/") == true -> "Reading"
-                                    else -> "Readit"
-                                },
+                                text = title,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.SemiBold,
                             )
                         },
                         navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            IconButton(onClick = ::navigateBack) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = when {
+                                        route.startsWith("read/") -> "Back to contents"
+                                        route.startsWith("book/") -> "Back to library"
+                                        else -> "Back"
+                                    },
+                                )
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(

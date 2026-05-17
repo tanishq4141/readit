@@ -237,22 +237,17 @@ This logic breaks in two scenarios that are increasingly common:
 
 The mental model that better fits modern distributed systems is the **testing diamond** or, in Spotify's framing, the **testing honeycomb**:
 
-```
-                  ┌────────────────────┐
-                  │  Few E2E tests      │  ← Critical user journeys only
-                  │  (high cost, high   │     Not a regression net
-                  │   confidence)       │
-                  └────────────────────┘
-                ┌────────────────────────┐
-                │  Many integration      │  ← Test at service boundaries
-                │  tests against real    │     Real DBs, real queues
-                │  dependencies          │     Contract tests for APIs
-                └────────────────────────┘
-              ┌────────────────────────────┐
-              │  Targeted unit tests        │  ← Pure business logic only
-              │  (complex algorithms,       │     Not for every function
-              │   data transformations)     │
-              └────────────────────────────┘
+```mermaid
+flowchart TB
+    E2E["Few E2E tests<br/>(high cost, high confidence)<br/>Critical user journeys only — not a regression net"]
+    INT["Many integration tests against real dependencies<br/>Test at service boundaries — real DBs, real queues<br/>Contract tests for APIs"]
+    UNIT["Targeted unit tests<br/>Pure business logic only — complex algorithms,<br/>data transformations; not for every function"]
+
+    E2E --> INT --> UNIT
+
+    style E2E fill:#0f3460,color:#ffffff
+    style INT fill:#1a472a,color:#ffffff
+    style UNIT fill:#0f3460,color:#ffffff
 ```
 
 The shift in emphasis: more tests at integration boundaries, fewer tests at the unit level for code that is primarily I/O coordination. The practical implication: your CI pipeline needs to be able to run real databases and real message queues in ephemeral containers for the integration test suite. The Dynamic Provisioning pattern (Chapter 9) and the Sidecar Verification pattern (Chapter 6) cover how to do this.

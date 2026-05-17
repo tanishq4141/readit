@@ -204,13 +204,11 @@ spec:
 
 The hardest part of rainbow deployment is the database. Three API versions running simultaneously against one database means the schema must satisfy all three versions simultaneously.
 
-```
-The compatibility constraint matrix:
-                  v3 ORM    v4 ORM    v5 ORM
-users table         ✓         ✓         ✓   — no changes, all versions compatible
-connections table   ✓         ✓         ✓   — v4 added columns but kept v3 columns
-pipelines table     ✓         ✓         ✗   — v5 renamed a column: INCOMPATIBLE
-```
+| Table | v3 ORM | v4 ORM | v5 ORM | Notes |
+|-------|:------:|:------:|:------:|-------|
+| users | ✓ | ✓ | ✓ | No changes; all versions compatible |
+| connections | ✓ | ✓ | ✓ | v4 added columns but kept v3 columns |
+| pipelines | ✓ | ✓ | ✗ | v5 renamed a column — **incompatible** |
 
 When a schema change is incompatible across versions, you have two options:
 

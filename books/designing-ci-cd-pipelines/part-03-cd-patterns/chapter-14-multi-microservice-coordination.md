@@ -207,18 +207,26 @@ Contract testing prevents deploying incompatible versions. Deployment order addr
 
 The rule: **deploy providers before consumers when adding new fields; deploy consumers before providers when removing fields**.
 
-```
-Adding a new field (backward-compatible):
-  pricing-service adds amounts.total (keeping price for now)
-  → Deploy pricing-service FIRST
-  → Deploy cart-service (which uses amounts.total)
-  → Remove price field from pricing-service LATER
+```mermaid
+flowchart TD
+  subgraph Add["Adding a field (backward-compatible)"]
+    A1["pricing-service adds amounts.total<br/>(keeps price for now)"]
+    A2["Deploy pricing-service FIRST"]
+    A3["Deploy cart-service<br/>(uses amounts.total)"]
+    A4["Remove price field from pricing-service LATER"]
+    A1 --> A2 --> A3 --> A4
+  end
 
-Removing a field (backward-incompatible):
-  pricing-service removes the old price field
-  → Deploy cart-service (updated to use amounts.total) FIRST
-  → Deploy pricing-service (without price field)
-  → No window of incompatibility: consumer doesn't need price before provider drops it
+  subgraph Remove["Removing a field (backward-incompatible)"]
+    R1["pricing-service will remove price field"]
+    R2["Deploy cart-service FIRST<br/>(uses amounts.total)"]
+    R3["Deploy pricing-service<br/>(without price field)"]
+    R4["No incompatibility window:<br/>consumer never needs dropped field"]
+    R1 --> R2 --> R3 --> R4
+  end
+
+  style Add fill:#0f3460,color:#ffffff
+  style Remove fill:#533483,color:#ffffff
 ```
 
 The Veridian incident: the wrong version of pricing-service was deployed because no mechanism encoded the "deploy the shim first" requirement. The correct implementation:

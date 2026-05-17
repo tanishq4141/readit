@@ -326,41 +326,38 @@ def run_post_deploy_analysis(
 
 An automatically generated impact report, sent to the team's channel within 10 minutes of every production deployment, closes the observability loop. Instead of waiting for alerts to fire (which means waiting for thresholds to be crossed), the team sees the metric delta immediately:
 
-```
-🚀 Deploy Impact Report: checkout-service @ a3f8c2d
-─────────────────────────────────────────────────
-Environment: production | By: maya.rodriguez | 14:15 UTC
+```mermaid
+flowchart TB
+    subgraph ok["Deploy Impact Report — checkout-service @ a3f8c2d"]
+        Meta1["Environment: production · By: maya.rodriguez · 14:15 UTC"]
+        M1["✅ Error Rate: 0.12% → 0.11% (-8%)"]
+        M2["✅ p99 Latency: 142ms → 138ms (-3%)"]
+        M3["✅ Request Rate: 847 → 851 RPS (+0.5%)"]
+        M4["✅ Memory: 312MB → 314MB (+0.6%)"]
+        Res1["No regressions detected — monitoring continues 30 min"]
+        Meta1 --> M1 --> M2 --> M3 --> M4 --> Res1
+    end
 
-📊 Metric Changes (30min before vs 5min after)
-
-✅ Error Rate:     0.12% → 0.11%  (-8%)
-✅ p99 Latency:    142ms → 138ms   (-3%)
-✅ Request Rate:   847 RPS → 851 RPS (+0.5%)
-✅ Memory:         312MB → 314MB   (+0.6%)
-
-No regressions detected. Monitoring continues for 30 minutes.
-
-Links: [Diff](github.com/.../compare/abc...def) | [PR #1847](github.com/.../pull/1847) | [Pipeline](ci.mycompany.com/runs/88712)
+    style Res1 fill:#1a472a,color:#ffffff
 ```
 
 Or, when a regression is detected:
 
-```
-⚠️ Deploy Impact Report: checkout-service @ e7b2f1a
-─────────────────────────────────────────────────
-Environment: production | By: jack.chen | 14:15 UTC
+```mermaid
+flowchart TB
+    subgraph warn["Deploy Impact Report — checkout-service @ e7b2f1a"]
+        Meta2["Environment: production · By: jack.chen · 14:15 UTC"]
+        W1["🔴 Error Rate: 0.12% → 1.43% (+1,092%) — REGRESSION"]
+        W2["🟡 p99 Latency: 142ms → 189ms (+33%) — ELEVATED"]
+        W3["✅ Request Rate: 847 → 849 RPS (+0.2%)"]
+        W4["✅ Memory: 312MB → 315MB (+1%)"]
+        Res2["⚠️ 2 metrics regressed — recommend immediate review"]
+        RB["Rollback: /rollback checkout-service a3f8c2d"]
+        Meta2 --> W1 --> W2 --> W3 --> W4 --> Res2 --> RB
+    end
 
-📊 Metric Changes (30min before vs 5min after)
-
-🔴 Error Rate:     0.12% → 1.43%  (+1,092%) ← REGRESSION
-🟡 p99 Latency:    142ms → 189ms   (+33%)    ← ELEVATED
-✅ Request Rate:   847 RPS → 849 RPS (+0.2%)
-✅ Memory:         312MB → 315MB   (+1%)
-
-⚠️ 2 metrics regressed. Recommend immediate review.
-Rollback command: /rollback checkout-service a3f8c2d
-
-Links: [Diff](github.com/.../compare/abc...def) | [Datadog](datadog.com/apm/checkout-service)
+    style W1 fill:#8b0000,color:#ffffff
+    style Res2 fill:#8b0000,color:#ffffff
 ```
 
 This is the report that Priya Mehta needed at 14:15. She would have seen the error rate regression at 14:20 — five minutes after the deploy completed, not 75 minutes later.

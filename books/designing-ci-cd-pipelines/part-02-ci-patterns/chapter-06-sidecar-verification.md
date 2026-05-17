@@ -43,21 +43,23 @@ This chapter is about building security and compliance verification that works w
 
 The sidecar verification pattern runs verification tasks — security scans, compliance checks, license audits, policy validation — in parallel with the main build and test pipeline, not after it.
 
-```
-BEFORE (sequential, security-last):
-[ checkout ] → [ build ] → [ tests ] → [ SAST scan ] → DONE
-                 8 min       22 min       4 min         = 34 min total
-                                                         SAST on critical path
+```mermaid
+flowchart TB
+    subgraph before["BEFORE — sequential, security-last (~34 min)"]
+        direction LR
+        B0[checkout] --> B1[build<br/>8 min] --> B2[tests<br/>22 min] --> B3[SAST scan<br/>4 min] --> B4[DONE]
+    end
 
-AFTER (sidecar, parallel):
-[ checkout ] → [ build + tests ] ──────────────────────┐
-              → [ SAST scan ] ─────────────────────┐   │
-              → [ license check ] ───────────┐     │   │
-              → [ policy validation ] ──┐    │     │   │
-                                        └────┴─────┘   │
-                                     [ fan-in gate ] ←──┘
-                                         8 min total
-                                         SAST on parallel track
+    subgraph after["AFTER — sidecar, parallel (~8 min)"]
+        C0[checkout] --> C1[build + tests]
+        C0 --> C2[SAST scan]
+        C0 --> C3[license check]
+        C0 --> C4[policy validation]
+        C1 & C2 & C3 & C4 --> C5[fan-in gate]
+    end
+
+    style B3 fill:#8b0000,color:#ffffff
+    style C5 fill:#1a472a,color:#ffffff
 ```
 
 The sidecar model has two benefits:

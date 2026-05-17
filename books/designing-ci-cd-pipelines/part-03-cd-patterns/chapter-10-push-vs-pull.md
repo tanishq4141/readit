@@ -39,29 +39,20 @@ Rhea writes the proposal to migrate to pull-based deployment that week. It takes
 
 In push-based deployment, the CI system is the actor. After a successful build, the CI pipeline executes deployment commands that write state into the target environment: running `kubectl apply`, `helm upgrade`, `aws ecs update-service`, `fly deploy`, or equivalent. The CI system has credentials for the target environment and uses them to push the desired state.
 
-```
-Push-based deployment flow:
+```mermaid
+flowchart TD
+    Dev[Developer commits code] --> CI[CI Pipeline<br/>GitHub Actions / GitLab CI]
+    CI --> Build[Build]
+    CI --> Test[Test]
+    Build --> Deploy[CI executes deployment commands<br/>on main branch]
+    Test --> Deploy
+    Deploy --> Creds["Uses credentials stored in CI:<br/>KUBECONFIG, AWS keys, GCP service account"]
+    Creds --> Target[Target environment<br/>Kubernetes, ECS, Lambda]
+    Target --> State[State changes applied]
 
-Developer commits code
-    │
-    ▼
-CI Pipeline (GitHub Actions / GitLab CI)
-    │
-    ├─ Build ──────────────────────────────────┐
-    ├─ Test ───────────────────────────────────┤
-    │                                          │
-    ▼  (on main branch)                        │
-CI executes deployment commands ←─────────────┘
-    │
-    │  Uses credentials stored in CI:
-    │  - KUBECONFIG secret
-    │  - AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
-    │  - GCP_SERVICE_ACCOUNT_KEY
-    │
-    ▼
-Target environment (Kubernetes, ECS, Lambda)
-    │
-    └── State changes applied
+    style CI fill:#0f3460,color:#ffffff
+    style Deploy fill:#8b0000,color:#ffffff
+    style State fill:#1a472a,color:#ffffff
 ```
 
 Push deployment is the intuitive model and the historical default. The first CI/CD systems were all push-based: they had mechanisms to run arbitrary commands after a successful build, and "deploy" was just another command. It works correctly at small scale — one or two environments, a single CI system, credentials that can be managed manually.
@@ -78,34 +69,25 @@ Push deployment has two architecturally significant properties:
 
 In pull-based deployment, an agent running *inside* the target environment is the actor. The agent watches a source of truth (typically a Git repository) for the desired state. When the desired state changes, the agent pulls the new configuration and applies it locally. The CI system's role ends at "push a new artifact version to a registry and update the desired state in Git." It does not reach into the target environment.
 
-```
-Pull-based deployment flow:
+```mermaid
+flowchart TD
+    Dev[Developer commits code] --> CI[CI Pipeline]
+    CI --> Build[Build]
+    CI --> Test[Test]
+    Build --> Registry[CI pushes new image to registry]
+    Test --> Registry
+    Registry --> Config[CI updates version in Git config repo]
+    Config --> Note["No credentials to target environment.<br/>CI's job is done here."]
+    Note --> Agent[Agent running IN the target environment]
+    Agent --> Watch[Watches Git config repo for changes]
+    Agent --> Detect[Detects new image version in config]
+    Agent --> Pull[Pulls new image from registry]
+    Agent --> Apply[Applies desired state locally]
+    Apply --> Updated[Target environment updated]
 
-Developer commits code
-    │
-    ▼
-CI Pipeline
-    │
-    ├─ Build ─────────────────────────────────┐
-    ├─ Test ──────────────────────────────────┤
-    │                                         │
-    ▼  (on main branch)                       │
-CI pushes new image to registry ←────────────┘
-CI updates version in Git config repo
-    │
-    │  (No credentials to target environment.
-    │   CI's job is done here.)
-    │
-    ▼
-Agent running IN the target environment
-    │
-    ├─ Watches Git config repo for changes
-    ├─ Detects new image version in config
-    ├─ Pulls new image from registry
-    └─ Applies desired state locally
-         │
-         ▼
-    Target environment updated
+    style CI fill:#0f3460,color:#ffffff
+    style Agent fill:#1a472a,color:#ffffff
+    style Updated fill:#1a472a,color:#ffffff
 ```
 
 The security inversion is significant: the CI system never holds credentials that can mutate production state. The agent in the target environment holds only the credentials needed to reach the Git config repo and the artifact registry — both read operations from the environment's perspective. An attacker who compromises the CI system gains no direct access to production. They could potentially modify the Git config repo (if CI has write access), but that modification is visible in version control and must be validated by the pull agent before application.
@@ -369,22 +351,21 @@ Kubernetes has pull-based agents (Argo CD, Flux) that are purpose-built for the 
 
 Lambda, ECS, Cloud Run, Heroku, Fly.io, and most non-Kubernetes platforms don't have pull agents. They are inherently push-based. You call their API with a new artifact version; they deploy it. OIDC-based short-lived credentials make push deployment safe for these platforms.
 
-```
-Hybrid deployment architecture:
+```mermaid
+flowchart TD
+    CI[CI Pipeline]
+    CI -->|Push| Lambda[AWS Lambda<br/>OIDC]
+    CI -->|Push| ECS[AWS ECS<br/>OIDC]
+    CI -->|Push| ECR[ECR Registry]
+    CI -->|Update| Git[Git — k8s manifests]
+    Git --> Argo[Argo CD — pull]
+    Argo --> Dev[dev cluster]
+    Argo --> Staging[staging]
+    Argo --> Prod[production]
 
-CI Pipeline
-    │
-    ├──── Push: Lambda function deployment ──────▶ AWS Lambda (OIDC)
-    ├──── Push: ECS service update ───────────────▶ AWS ECS (OIDC)
-    ├──── Push: Image to ECR ─────────────────────▶ ECR Registry
-    └──── Update: GitOps config repo ─────────────▶ Git (k8s manifests)
-                                                         │
-                                                         ▼
-                                                   Argo CD (pull)
-                                                         │
-                                              ┌──────────┼──────────┐
-                                              ▼          ▼          ▼
-                                         dev cluster  staging   production
+    style CI fill:#0f3460,color:#ffffff
+    style Argo fill:#1a472a,color:#ffffff
+    style Prod fill:#1a472a,color:#ffffff
 ```
 
 ---

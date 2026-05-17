@@ -22,20 +22,16 @@ eBPF (extended Berkeley Packet Filter) is a technology that allows running sandb
 
 The kernel hook points relevant to deployment traffic management:
 
-```
-Network packet arrival
-        │
-        ▼ ─── XDP hook (eXpress Data Path)
-   Network Driver                          ← Fastest: runs before skb allocation
-        │
-        ▼ ─── TC ingress hook (Traffic Control)  
-   Network Stack                           ← After skb allocation, before routing
-        │
-        ▼ ─── Socket filter hook
-   Socket layer                            ← Per-connection filtering
-        │
-        ▼
-   Application (userspace)
+```mermaid
+flowchart TD
+    A[Network packet arrival] --> B["XDP hook (eXpress Data Path)<br/>Network Driver<br/><i>Fastest: runs before skb allocation</i>"]
+    B --> C["TC ingress hook (Traffic Control)<br/>Network Stack<br/><i>After skb allocation, before routing</i>"]
+    C --> D["Socket filter hook<br/>Socket layer<br/><i>Per-connection filtering</i>"]
+    D --> E[Application (userspace)]
+
+    style B fill:#0f3460,color:#ffffff
+    style C fill:#533483,color:#ffffff
+    style E fill:#1a472a,color:#ffffff
 ```
 
 **XDP** (eXpress Data Path): Executes in the network driver, before the kernel allocates a socket buffer (skb). This is the highest-performance hook — at 10Gbps wire speed, an XDP program can process 14+ million packets per second on a single CPU core. Typical XDP program latency: 80–100 nanoseconds per packet.
@@ -119,34 +115,34 @@ bpftool map dump name port_packet_count | grep -v "value: 0"
 
 Cilium is a CNCF graduated project that replaces the traditional sidecar proxy model (Envoy/Istio) with eBPF programs running in the kernel. The architectural difference:
 
-```
-Traditional sidecar proxy model (Istio/Envoy):
-  
-  Pod A                              Pod B
-  ┌──────────────────────┐          ┌──────────────────────┐
-  │ App Container        │          │ App Container        │
-  │      │               │          │      ▲               │
-  │      ▼               │          │      │               │
-  │ Envoy Sidecar        │          │ Envoy Sidecar        │
-  │ (100-200μs overhead) │          │ (100-200μs overhead) │
-  └──────────┬───────────┘          └──────────────────────┘
-             │ TCP connection
-  Network ───┘
+```mermaid
+flowchart TB
+    subgraph sidecar["Traditional sidecar proxy model (Istio/Envoy)"]
+        direction LR
+        subgraph podA["Pod A"]
+            A1[App Container] --> A2["Envoy Sidecar<br/>100–200μs overhead"]
+        end
+        subgraph podB["Pod B"]
+            B2["Envoy Sidecar<br/>100–200μs overhead"] --> B1[App Container]
+        end
+        A2 -->|TCP connection| B2
+        NET[Network] --> A2
+    end
 
-Cilium eBPF model:
-  
-  Pod A              Kernel (shared by all pods)    Pod B
-  ┌─────────┐       ┌─────────────────────────┐    ┌─────────┐
-  │ App      │       │ Cilium eBPF programs     │    │ App      │
-  │          │──────▶│ (TC/XDP hook points)     │───▶│          │
-  │          │       │ Policy enforcement        │    │          │
-  └─────────┘       │ Load balancing            │    └─────────┘
-                     │ Observability collection  │
-                     └─────────────────────────┘
-                     
-  No sidecar containers. eBPF in the kernel handles routing.
-  Overhead: ~10μs vs 100-200μs for proxy model.
+    subgraph cilium["Cilium eBPF model"]
+        direction LR
+        PA[Pod A<br/>App] --> K["Kernel — shared by all pods<br/>Cilium eBPF programs (TC/XDP)<br/>Policy enforcement · Load balancing<br/>Observability collection"]
+        K --> PB[Pod B<br/>App]
+    end
+
+    style A2 fill:#533483,color:#ffffff
+    style B2 fill:#533483,color:#ffffff
+    style K fill:#0f3460,color:#ffffff
+    style PA fill:#1a472a,color:#ffffff
+    style PB fill:#1a472a,color:#ffffff
 ```
+
+No sidecar containers. eBPF in the kernel handles routing. Overhead: ~10μs vs 100–200μs for the proxy model.
 
 **For deployment traffic management**, Cilium provides:
 

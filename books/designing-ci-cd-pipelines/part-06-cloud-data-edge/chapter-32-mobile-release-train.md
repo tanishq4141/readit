@@ -42,18 +42,22 @@ The postmortem produces two findings:
 
 Mobile deployment has two distinct channels with different latencies:
 
-```
-App Store Channel (native code changes):
-  Build → Sign → Submit → Review (1–7 days) → Release → Phased rollout → 100%
-  Total time from commit to all users: 1–10 days
+```mermaid
+flowchart TB
+    subgraph appstore["App Store Channel — native code · 1–10 days to all users"]
+        AS1["Build → Sign → Submit"] --> AS2["Review 1–7 days"] --> AS3["Release → Phased rollout → 100%"]
+    end
 
-OTA Channel (JavaScript bundle changes — React Native/Expo only):
-  Build bundle → Sign → Deploy to CDN → App downloads and installs on next launch
-  Total time from commit to all users: hours to days (depends on app launch frequency)
+    subgraph ota["OTA Channel — JS bundle only · hours to days"]
+        O1["Build bundle → Sign"] --> O2["Deploy to CDN"] --> O3["App installs on next launch"]
+    end
 
-Feature Flag Channel (runtime behavior, no code change):
-  Change flag value in flag service → App reads flag on next API call
-  Total time to all users: seconds to minutes
+    subgraph flags["Feature Flag Channel — no code change · seconds to minutes"]
+        F1["Change flag in flag service"] --> F2["App reads on next API call"]
+    end
+
+    style AS3 fill:#0f3460,color:#ffffff
+    style F2 fill:#1a472a,color:#ffffff
 ```
 
 The three channels address different use cases:
@@ -309,24 +313,31 @@ The minimum version is controlled server-side. When the security patch is releas
 Both Apple and Google support staged rollouts: releasing to a percentage of users over time.
 
 **Apple App Store (App Store Connect):**
-```
-Day 1:  1% of eligible users
-Day 2:  2%
-Day 3:  5%
-Day 7:  10%
-Day 14: 20%
-Day 21: 50%
-Day 28: 100%
+
+```mermaid
+flowchart LR
+    A1["Day 1 — 1%"] --> A2["Day 2 — 2%"] --> A3["Day 3 — 5%"]
+    A3 --> A7["Day 7 — 10%"] --> A14["Day 14 — 20%"]
+    A14 --> A21["Day 21 — 50%"] --> A28["Day 28 — 100%"]
+
+    style A28 fill:#1a472a,color:#ffffff
 ```
 
 The phased rollout can be paused at any percentage via App Store Connect. If crash rates spike after day 2, pause the rollout, investigate, and release a fix before continuing.
 
 **Google Play Store:**
-```
-Set initial rollout to 5% in Play Console
-Monitor for crashes in Play Console → Android vitals
-Increase manually to 10% → 20% → 50% → 100%
-Or pause and release a fix
+
+```mermaid
+flowchart TD
+    G1["Set initial rollout to 5% in Play Console"]
+    G2["Monitor crashes in Play Console → Android vitals"]
+    G3["Increase manually: 10% → 20% → 50% → 100%"]
+    G4["Or pause and release a fix"]
+
+    G1 --> G2 --> G3
+    G2 -.-> G4
+
+    style G3 fill:#1a472a,color:#ffffff
 ```
 
 Play Store allows you to halt a staged rollout and release a new version to the remaining users, effectively replacing the broken version before it reaches 100%.
@@ -335,19 +346,19 @@ Play Store allows you to halt a staged rollout and release a new version to the 
 
 ## Mobile-Specific Branching
 
-```
-main ─────────────────────────────────────────────────────────▶
-     │               │                    │
-     │               ▼                    │
-     │        release/3.2 ─────────────── ┤
-     │        (3.2.0, 3.2.1)              │
-     │               │                    │
-     │               │ cherry-pick fix     │
-     │    hotfix/3.2.1-security ──────────┘
-     │    (emergency patch for 3.2.0)
-     │
-     ▼
-     release/3.3 (next train)
+```mermaid
+gitGraph
+    commit id: "main"
+    branch release/3.2
+    checkout release/3.2
+    commit id: "3.2.0"
+    commit id: "3.2.1"
+    checkout main
+    branch hotfix/3.2.1-security
+    commit id: "emergency patch"
+    checkout main
+    branch release/3.3
+    commit id: "next train"
 ```
 
 Key rule: **release branches are never merged back to main**. Instead:

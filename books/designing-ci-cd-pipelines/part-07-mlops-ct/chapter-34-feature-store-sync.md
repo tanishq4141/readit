@@ -53,23 +53,27 @@ A feature store eliminates training/serving skew by definition: there is one fea
 
 ## Feature Store Architecture
 
-```
-Data Sources (database, event streams, data warehouse)
-        │
-        ▼
-Feature Pipeline
-(Compute feature values from raw data)
-        │
-        ├──────────────────────────────────────┐
-        ▼                                      ▼
-Offline Store                           Online Store
-(columnar, batch, for training)         (key-value, low-latency, for serving)
-(BigQuery, S3 Parquet, DeltaLake)       (Redis, DynamoDB, Cassandra)
-        │                                      │
-        ▼                                      ▼
-Training Pipeline                      Inference Service
-(reads historical features              (reads current features
- with point-in-time correctness)         in <10ms)
+```mermaid
+flowchart TD
+    DS["Data Sources<br/>(database, event streams, data warehouse)"]
+    FP["Feature Pipeline<br/>(Compute feature values from raw data)"]
+    OS["Offline Store<br/>(columnar, batch, for training)<br/>BigQuery, S3 Parquet, DeltaLake"]
+    ON["Online Store<br/>(key-value, low-latency, for serving)<br/>Redis, DynamoDB, Cassandra"]
+    TP["Training Pipeline<br/>(reads historical features<br/>with point-in-time correctness)"]
+    IS["Inference Service<br/>(reads current features in under 10ms)"]
+
+    DS --> FP
+    FP --> OS
+    FP --> ON
+    OS --> TP
+    ON --> IS
+
+    style DS fill:#0f3460,color:#ffffff
+    style FP fill:#0f3460,color:#ffffff
+    style OS fill:#1a472a,color:#ffffff
+    style ON fill:#1a472a,color:#ffffff
+    style TP fill:#27272a,color:#e4e4e7
+    style IS fill:#27272a,color:#e4e4e7
 ```
 
 ### Online vs. Offline Store

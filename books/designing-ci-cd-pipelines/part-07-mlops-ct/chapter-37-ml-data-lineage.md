@@ -44,31 +44,41 @@ Three weeks. $180,000 in compute costs. The entire cost was driven by the absenc
 
 ## The ML Artifact Chain
 
-```
-Raw Data Sources
-    │
-    ▼ (extraction + preprocessing)
-Training Dataset (versioned snapshot)
-    │
-    ▼ (feature engineering)
-Feature Matrix (versioned)
-    │
-    ├─ Training Split
-    ├─ Validation Split
-    └─ Test Split
-            │
-            ▼ (training run)
-Model Artifact (versioned)
-    │
-    ├─ Model Weights
-    ├─ Hyperparameters
-    ├─ Training metrics
-    └─ Evaluation metrics
-            │
-            ▼ (deployment)
-Deployed Model Version
-    │
-    └─ Serving in environment X since timestamp T
+```mermaid
+flowchart TD
+    RDS["Raw Data Sources"]
+    TD["Training Dataset<br/>(versioned snapshot)<br/>extraction + preprocessing"]
+    FM["Feature Matrix<br/>(versioned)<br/>feature engineering"]
+    TS["Training Split"]
+    VS["Validation Split"]
+    XS["Test Split"]
+    MA["Model Artifact<br/>(versioned)<br/>training run"]
+    MW["Model Weights"]
+    HP["Hyperparameters"]
+    TM["Training metrics"]
+    EM["Evaluation metrics"]
+    DMV["Deployed Model Version<br/>deployment"]
+    SRV["Serving in environment X<br/>since timestamp T"]
+
+    RDS --> TD --> FM
+    FM --> TS
+    FM --> VS
+    FM --> XS
+    TS --> MA
+    VS --> MA
+    XS --> MA
+    MA --> MW
+    MA --> HP
+    MA --> TM
+    MA --> EM
+    MA --> DMV --> SRV
+
+    style RDS fill:#0f3460,color:#ffffff
+    style TD fill:#0f3460,color:#ffffff
+    style FM fill:#0f3460,color:#ffffff
+    style MA fill:#1a472a,color:#ffffff
+    style DMV fill:#1a472a,color:#ffffff
+    style SRV fill:#27272a,color:#e4e4e7
 ```
 
 Full lineage means every node in this graph is versioned, traceable, and queryable. Given a deployed model, you can answer: what training data was used? Which specific records from which source tables? What preprocessing was applied? What hyperparameters produced this model? What evaluation metrics did it achieve?

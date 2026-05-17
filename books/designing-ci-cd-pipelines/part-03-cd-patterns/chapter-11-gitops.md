@@ -58,25 +58,22 @@ Hartwell was satisfying principles 1 and 2 — they had declarative configs in G
 
 Understanding how Argo CD works internally makes its behavior predictable and its failure modes debuggable.
 
-```
-Argo CD Architecture:
+```mermaid
+flowchart TB
+    subgraph argocd["Argo CD (in-cluster)"]
+        API["API Server<br/>gRPC/HTTP — CLI/UI, WebHooks"]
+        Repo["Repo Server<br/>git clone / manifests — caches repos"]
+        AppCtrl["Application Controller<br/>reconcile loop"]
+        API --- Repo --- AppCtrl
+    end
 
-┌─────────────────────────────────────────────────────────────┐
-│                     Argo CD (in-cluster)                     │
-│                                                             │
-│  ┌─────────────┐     ┌──────────────┐     ┌─────────────┐  │
-│  │ API Server  │     │  Repo Server │     │ Application │  │
-│  │ (gRPC/HTTP) │     │  (git clone/ │     │ Controller  │  │
-│  │             │     │   manifests) │     │ (reconcile  │  │
-│  │ CLI/UI      │     │              │     │  loop)      │  │
-│  │ WebHooks    │     │ Caches repos │     │             │  │
-│  └─────────────┘     └──────────────┘     └─────────────┘  │
-│         │                   │                    │          │
-└─────────┼───────────────────┼────────────────────┼──────────┘
-          │                   │                    │
-          ▼                   ▼                    ▼
-    argocd CLI/UI       Git Config Repo    Kubernetes API
-    (human ops)         (desired state)   (actual state)
+    API --> CLI[argocd CLI/UI<br/>human ops]
+    Repo --> GitRepo[Git Config Repo<br/>desired state]
+    AppCtrl --> K8s[Kubernetes API<br/>actual state]
+
+    style argocd fill:#0f3460,color:#ffffff
+    style GitRepo fill:#1a472a,color:#ffffff
+    style K8s fill:#0f3460,color:#ffffff
 ```
 
 **The Application Controller** is the heart of Argo CD. It runs a reconcile loop that:
@@ -192,36 +189,30 @@ spec:
 
 The structure of the GitOps config repo determines how maintainable the repository is as the number of services and environments grows.
 
-```
-k8s-config/                      ← GitOps config repository
-├── apps/                         ← Application manifests
-│   ├── payment-api/
-│   │   ├── base/                 ← Base manifests (environment-agnostic)
-│   │   │   ├── deployment.yaml
-│   │   │   ├── service.yaml
-│   │   │   └── kustomization.yaml
-│   │   ├── dev/                  ← Dev environment overlay
-│   │   │   ├── kustomization.yaml  # Patches: replicas=1, image tag=latest
-│   │   │   └── patches/
-│   │   │       └── replicas.yaml
-│   │   ├── staging/              ← Staging overlay
-│   │   │   ├── kustomization.yaml  # Patches: replicas=2, specific image tag
-│   │   │   └── patches/
-│   │   └── production/           ← Production overlay
-│   │       ├── kustomization.yaml  # Patches: replicas=5, HPA enabled
-│   │       └── patches/
-│   └── user-service/
-│       └── ... (same structure)
-│
-├── infrastructure/               ← Cluster infrastructure (not application-specific)
-│   ├── cert-manager/
-│   ├── ingress-nginx/
-│   └── monitoring/
-│
-└── clusters/                     ← One directory per cluster, containing
-    ├── production-us-east-1/     ← Argo CD Application manifests that
-    ├── production-eu-west-1/     ← point to the apps/ and infrastructure/
-    └── staging/                  ← directories for this cluster
+```mermaid
+flowchart TD
+    Root["k8s-config/<br/>GitOps config repository"]
+    Root --> Apps["apps/<br/>Application manifests"]
+    Root --> Infra["infrastructure/<br/>Cluster infrastructure"]
+    Root --> Clusters["clusters/<br/>One directory per cluster"]
+
+    Apps --> Pay["payment-api/"]
+    Pay --> Base["base/<br/>deployment.yaml, service.yaml, kustomization.yaml"]
+    Pay --> Dev["dev/<br/>kustomization.yaml, patches/"]
+    Pay --> Stg["staging/<br/>kustomization.yaml, patches/"]
+    Pay --> Prod["production/<br/>kustomization.yaml, patches/"]
+    Apps --> User["user-service/<br/>same structure"]
+
+    Infra --> Cert[cert-manager/]
+    Infra --> Ingress[ingress-nginx/]
+    Infra --> Mon[monitoring/]
+
+    Clusters --> USE1[production-us-east-1/]
+    Clusters --> EUW1[production-eu-west-1/]
+    Clusters --> StgC[staging/]
+
+    style Root fill:#0f3460,color:#ffffff
+    style Apps fill:#1a472a,color:#ffffff
 ```
 
 ```yaml
@@ -342,21 +333,24 @@ ESO is the recommendation for most teams. The secret values live in a purpose-bu
 
 ## Flux vs. Argo CD: The Definitive Comparison
 
-```
-                        Argo CD         Flux v2
-UI                      Yes (web)       No (CLI + Grafana dashboard)
-CRD-based config        Partial         Fully CRD-driven
-Multi-tenancy           Projects + RBAC Tenancy toolkit
-Notification support    Yes             Yes (notification-controller)
-Multi-cluster           App of Apps     Cluster API + Flux
-Helm support            Native          HelmRelease CRD
-Kustomize support       Native          Kustomization CRD
-Config repo structure   Application CRD Git Repository + Kustomization CRDs
-Learning curve          Moderate        Higher (more CRDs to understand)
-Self-hosted only?       Yes             Yes
-CNCF graduation         Graduated       Graduated
-Best for                Teams wanting   Teams wanting everything-in-CRDs
-                        UI visibility   and minimal footprint
+```mermaid
+flowchart LR
+    subgraph compare["Argo CD vs Flux v2"]
+        direction TB
+        A1["UI: Yes (web) vs No (CLI + Grafana)"]
+        A2["CRD config: Partial vs Fully CRD-driven"]
+        A3["Multi-tenancy: Projects + RBAC vs Tenancy toolkit"]
+        A4["Notifications: Yes vs Yes (notification-controller)"]
+        A5["Multi-cluster: App of Apps vs Cluster API + Flux"]
+        A6["Helm: Native vs HelmRelease CRD"]
+        A7["Kustomize: Native vs Kustomization CRD"]
+        A8["Config repo: Application CRD vs GitRepository + Kustomization CRDs"]
+        A9["Learning curve: Moderate vs Higher"]
+        A10["CNCF: Graduated vs Graduated"]
+        A11["Best for: UI visibility vs everything-in-CRDs, minimal footprint"]
+    end
+
+    style compare fill:#0f3460,color:#ffffff
 ```
 
 The controversial take: **the UI is both Argo CD's killer feature and its operational liability**. Teams that are running GitOps correctly should rarely need to click "sync" manually — the automation handles it. When the UI is available, teams click it instead of fixing the root cause of sync failures. The UI creates an escape valve that weakens the GitOps discipline. Flux's lack of a UI forces operators to fix problems in Git rather than clicking through them.

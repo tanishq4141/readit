@@ -14,29 +14,38 @@ All ten chapters address the ML artifact lifecycle: data → features → traine
 
 ## Chapter Map
 
-```
-Chapter 33: CT Trigger Pattern
-    (When to retrain: schedule, drift, data arrival, performance degradation)
-    │
-    ▼
-Chapter 34: Feature Store Sync
-    (Where features come from: training/serving parity)
-    │
-    ▼
-Chapter 38: ML Pipeline Orchestration & Model Registry
-    (How training runs: reproducible pipelines, versioned artifacts)
-    │
-    ├─▶ Chapter 35: Champion/Challenger (How to evaluate: statistical comparison)
-    ├─▶ Chapter 36: Model Shadowing (How to validate: production traffic without impact)
-    ├─▶ Chapter 37: Data Lineage & Provenance (How to audit: full artifact chain)
-    │
-    ▼
-Chapter 39: Data Drift Detection & Retraining
-    (When to trigger Ch 33 again: statistical drift monitoring)
-    │
-    ├─▶ Chapter 40: GPU/Accelerator-Aware CI/CD (Infrastructure for training/inference)
-    ├─▶ Chapter 41: LLMOps & Foundation Models (Large model deployment patterns)
-    └─▶ Chapter 42: ML A/B Testing & Interleaving (Comparing models with real traffic)
+```mermaid
+flowchart TD
+    Ch33["Chapter 33: CT Trigger Pattern<br/>When to retrain: schedule, drift, data arrival, performance degradation"]
+    Ch34["Chapter 34: Feature Store Sync<br/>Where features come from: training/serving parity"]
+    Ch38["Chapter 38: ML Pipeline Orchestration & Model Registry<br/>How training runs: reproducible pipelines, versioned artifacts"]
+    Ch35["Chapter 35: Champion/Challenger<br/>How to evaluate: statistical comparison"]
+    Ch36["Chapter 36: Model Shadowing<br/>How to validate: production traffic without impact"]
+    Ch37["Chapter 37: Data Lineage & Provenance<br/>How to audit: full artifact chain"]
+    Ch39["Chapter 39: Data Drift Detection & Retraining<br/>When to trigger Ch 33 again: statistical drift monitoring"]
+    Ch40["Chapter 40: GPU/Accelerator-Aware CI/CD<br/>Infrastructure for training/inference"]
+    Ch41["Chapter 41: LLMOps & Foundation Models<br/>Large model deployment patterns"]
+    Ch42["Chapter 42: ML A/B Testing & Interleaving<br/>Comparing models with real traffic"]
+
+    Ch33 --> Ch34 --> Ch38
+    Ch38 --> Ch35
+    Ch38 --> Ch36
+    Ch38 --> Ch37
+    Ch38 --> Ch39
+    Ch39 --> Ch40
+    Ch39 --> Ch41
+    Ch39 --> Ch42
+
+    style Ch33 fill:#0f3460,color:#ffffff
+    style Ch34 fill:#0f3460,color:#ffffff
+    style Ch38 fill:#0f3460,color:#ffffff
+    style Ch35 fill:#1a472a,color:#ffffff
+    style Ch36 fill:#1a472a,color:#ffffff
+    style Ch37 fill:#1a472a,color:#ffffff
+    style Ch39 fill:#0f3460,color:#ffffff
+    style Ch40 fill:#1a472a,color:#ffffff
+    style Ch41 fill:#1a472a,color:#ffffff
+    style Ch42 fill:#1a472a,color:#ffffff
 ```
 
 ## Chapters in This Part

@@ -16,35 +16,30 @@ The chapters are more interdependent than Part II's chapters. GitOps (Chapter 11
 
 ## Chapter Map
 
-```
-Chapter 10: Push vs. Pull
-    │  The architectural choice that determines everything else.
-    │  Most modern deployment architectures use pull for Kubernetes
-    │  and push for simple/serverless targets.
-    │
-    └──────────────────────────────▶ Chapter 11: GitOps
-                                      (pull-based deployment formalized
-                                       as an operational pattern)
-                                            │
-                                ┌───────────┴────────────┐
-                                ▼                        ▼
-                    Chapter 12: Ephemeral          Chapter 13: Environment
-                    Environments                    Promotion
-                    (GitOps extended to            (GitOps artifacts move
-                     per-PR preview envs)           through environments)
-                                                         │
-                                                         ▼
-                                              Chapter 14: Multi-Microservice
-                                              Coordination
-                                              (Promotion for multiple
-                                               interdependent services)
-                                                         │
-                                           ┌─────────────┴──────────┐
-                                           ▼                        ▼
-                               Chapter 15: Branch by          Chapter 16: FinOps
-                               Abstraction                     Target
-                               (Making big changes            (Making deployments
-                                without big-bang deploys)      economically accountable)
+```mermaid
+flowchart TD
+    Ch10["Chapter 10: Push vs. Pull<br/>The architectural choice that determines everything else.<br/>Pull for Kubernetes; push for simple/serverless targets."]
+    Ch11["Chapter 11: GitOps<br/>Pull-based deployment formalized as an operational pattern"]
+    Ch12["Chapter 12: Ephemeral Environments<br/>GitOps extended to per-PR preview envs"]
+    Ch13["Chapter 13: Environment Promotion<br/>GitOps artifacts move through environments"]
+    Ch14["Chapter 14: Multi-Microservice Coordination<br/>Promotion for multiple interdependent services"]
+    Ch15["Chapter 15: Branch by Abstraction<br/>Large changes without big-bang deploys"]
+    Ch16["Chapter 16: FinOps Target<br/>Deployments economically accountable"]
+
+    Ch10 --> Ch11
+    Ch11 --> Ch12
+    Ch11 --> Ch13
+    Ch13 --> Ch14
+    Ch14 --> Ch15
+    Ch14 --> Ch16
+
+    style Ch10 fill:#0f3460,color:#ffffff
+    style Ch11 fill:#0f3460,color:#ffffff
+    style Ch12 fill:#1a472a,color:#ffffff
+    style Ch13 fill:#0f3460,color:#ffffff
+    style Ch14 fill:#0f3460,color:#ffffff
+    style Ch15 fill:#1a472a,color:#ffffff
+    style Ch16 fill:#0f3460,color:#ffffff
 ```
 
 ## Prerequisites

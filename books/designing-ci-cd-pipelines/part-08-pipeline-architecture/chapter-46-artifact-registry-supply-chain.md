@@ -39,30 +39,23 @@ The response: treat the image as potentially compromised, rebuild all seven serv
 
 ## The Supply Chain Attack Surface
 
-```
-Developer Workstation
-    │ git push
-    │
-    ▼
-Source Code Repository (GitHub)
-    │ CI trigger
-    │
-    ▼
-CI Pipeline (GitHub Actions runner)
-    │ docker pull (base image)  ← Attack surface: compromised base image
-    │ npm install               ← Attack surface: compromised npm package
-    │ docker build
-    │ docker push               ← Attack surface: wrong registry (typosquatting)
-    │
-    ▼
-Artifact Registry (ECR)
-    │ image pull at deploy      ← Attack surface: mutable tag overwrite
-    │
-    ▼
-Production Environment
-    │
-    ▼
-Running Containers              ← Attack surface: runtime compromise
+```mermaid
+flowchart TD
+    DW["Developer Workstation<br/>git push"]
+    SCR["Source Code Repository (GitHub)<br/>CI trigger"]
+    CI["CI Pipeline (GitHub Actions runner)<br/>docker pull (base image) — compromised base image<br/>npm install — compromised npm package<br/>docker build · docker push — wrong registry (typosquatting)"]
+    AR["Artifact Registry (ECR)<br/>image pull at deploy — mutable tag overwrite"]
+    PE["Production Environment"]
+    RC["Running Containers<br/>runtime compromise"]
+
+    DW --> SCR --> CI --> AR --> PE --> RC
+
+    style DW fill:#27272a,color:#e4e4e7
+    style SCR fill:#0f3460,color:#ffffff
+    style CI fill:#533483,color:#ffffff
+    style AR fill:#0f3460,color:#ffffff
+    style PE fill:#1a472a,color:#ffffff
+    style RC fill:#533483,color:#ffffff
 ```
 
 The attacks that supply chain security addresses:

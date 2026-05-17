@@ -320,15 +320,22 @@ For CI use cases, Firecracker solves the isolation/cold-start trade-off: unlike 
 
 ### The Architecture
 
-```
-Traditional VM cold start: 60 seconds (BIOS → bootloader → kernel → init → runner)
+```mermaid
+flowchart LR
+  subgraph VM["Traditional VM cold start (~60s)"]
+    V1["BIOS"] --> V2["Bootloader"] --> V3["Kernel"] --> V4["init"] --> V5["Runner"]
+  end
 
-Firecracker cold start: 125ms
-  - Pre-prepared guest kernel image (no BIOS, no bootloader)
-  - Memory snapshot of a pre-initialized VM (skips kernel boot entirely)
-  - Restore the snapshot → resume from post-boot state
-  - Runner process is already running in the snapshot
-  - Job starts immediately
+  subgraph FC["Firecracker cold start (~125ms)"]
+    F1["Pre-built kernel image<br/>(no BIOS/bootloader)"]
+    F2["Memory snapshot of<br/>pre-initialized VM"]
+    F3["Restore snapshot →<br/>resume post-boot"]
+    F4["Runner already running<br/>→ job starts immediately"]
+    F1 --> F2 --> F3 --> F4
+  end
+
+  style VM fill:#533483,color:#ffffff
+  style FC fill:#1a472a,color:#ffffff
 ```
 
 Firecracker-based CI runners:

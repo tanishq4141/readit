@@ -224,11 +224,16 @@ spec:
   # No human intervention required for canary metric failures
 ```
 
-When Flagger triggers a rollback:
-1. Canary traffic goes from N% back to 0%
-2. The canary Deployment is deleted
-3. A Kubernetes event is emitted
-4. If configured: a Slack/PagerDuty alert fires
+```mermaid
+flowchart TD
+  T["Flagger triggers rollback"] --> S1["Canary traffic N% → 0%"]
+  S1 --> S2["Delete canary Deployment"]
+  S2 --> S3["Emit Kubernetes event"]
+  S3 --> S4["Optional: Slack / PagerDuty alert"]
+
+  style T fill:#8b0000,color:#ffffff
+  style S1 fill:#1a472a,color:#ffffff
+```
 
 This is the "rollback happens in seconds" model — because the rollback is a load balancer change (redirect traffic from canary back to stable), not a new deployment.
 

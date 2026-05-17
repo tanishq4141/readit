@@ -51,25 +51,23 @@ The naive solution — deploy all regions simultaneously — minimizes the windo
 
 The correct solution: **non-primary first, validate, then primary**.
 
-```
-Multi-Region Deployment Sequence:
+```mermaid
+flowchart TD
+    S1["1. Deploy non-primary regions first<br/>eu-west-1 · ap-southeast-1 — can run concurrently"]
+    S1a["Deploy eu-west-1 → health checks pass ~5 min"]
+    S1b["Deploy ap-southeast-1 → health checks pass ~5 min"]
+    S2["2. Validate non-primary health — 10 min observation<br/>Error rate · replication lag · transaction success rate"]
+    S3["3. Deploy primary us-east-1<br/>Only if non-primary is healthy"]
+    S4["4. Post-deployment monitoring — 15 min<br/>All regions for consistency issues"]
 
-1. Deploy to non-primary regions first (eu-west-1, ap-southeast-1)
-   ├─ Deploy to eu-west-1
-   │  └─ Wait for health checks to pass (5 minutes)
-   └─ Deploy to ap-southeast-1 (can run concurrently with eu-west-1)
-      └─ Wait for health checks to pass
+    S1 --> S1a
+    S1 --> S1b
+    S1a --> S2
+    S1b --> S2
+    S2 --> S3 --> S4
 
-2. Validate non-primary region health (10 minutes observation)
-   ├─ Error rate comparison: canary vs. baseline
-   ├─ Cross-region replication lag check
-   └─ Business metrics: transaction success rate
-
-3. Deploy to primary region (us-east-1) only if non-primary is healthy
-   └─ Primary handles the most traffic — validate non-primary first
-
-4. Post-deployment monitoring (15 minutes)
-   └─ Monitor all regions for consistency issues
+    style S3 fill:#0f3460,color:#ffffff
+    style S4 fill:#1a472a,color:#ffffff
 ```
 
 ```yaml

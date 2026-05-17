@@ -39,24 +39,32 @@ The incident takes 8 hours. The root cause: no model registry, no immutable arti
 
 The model registry for ML is the direct analog of a container image registry for software. It stores versioned model artifacts, tracks which version is deployed to which environment, and enables rollback to any previous version.
 
-```
-Model Lifecycle in a Registry:
+```mermaid
+flowchart TD
+    TR["Training Run"]
+    RM["Registered Model: fraud-detection"]
+    V1["Version 1 (Jan 15)<br/>stage: Archived"]
+    V2["Version 2 (Feb 8)<br/>stage: Production<br/>currently deployed"]
+    V3["Version 3 (Mar 1)<br/>stage: Staging<br/>being evaluated"]
+    V4["Version 4 (Mar 15)<br/>stage: None<br/>just registered, in testing"]
+    STG["Staging"]
+    PROD["Production"]
+    ARCH["Archived"]
 
-Training Run
-    │
-    ▼
-Registered Model: "fraud-detection"
-    │
-    ├── Version 1 (Jan 15) — stage: Archived
-    ├── Version 2 (Feb 8)  — stage: Production ← currently deployed
-    ├── Version 3 (Mar 1)  — stage: Staging   ← being evaluated
-    └── Version 4 (Mar 15) — stage: None       ← just registered, in testing
-    
-Stages: None → Staging → Production → Archived
-                   │            │
-                   │  champion/challenger
-                   │  + shadow evaluation
-                   └──────────────────────────────▶ Production
+    TR --> RM
+    RM --> V1
+    RM --> V2
+    RM --> V3
+    RM --> V4
+    V4 -->|"None → Staging"| STG
+    STG -->|"champion/challenger<br/>+ shadow evaluation"| PROD
+    PROD --> ARCH
+
+    style TR fill:#0f3460,color:#ffffff
+    style RM fill:#0f3460,color:#ffffff
+    style V2 fill:#1a472a,color:#ffffff
+    style V3 fill:#533483,color:#ffffff
+    style PROD fill:#1a472a,color:#ffffff
 ```
 
 ```python

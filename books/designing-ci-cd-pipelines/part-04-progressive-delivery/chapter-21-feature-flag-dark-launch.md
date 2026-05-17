@@ -105,30 +105,36 @@ The lifecycle implications:
 
 Understanding how flag evaluation works is critical for understanding the failure modes and performance implications.
 
-```
-LaunchDarkly client-side evaluation (browser/mobile):
+```mermaid
+flowchart TD
+  subgraph Client["LaunchDarkly client-side (browser/mobile)"]
+    C1["SDK init → connect to LD streaming endpoint"]
+    C2["LD pushes all flag values via SSE"]
+    C3["SDK caches flags in memory"]
+    C4["flag.variation() → in-memory lookup"]
+    C5["Flag change → SSE push → cache update"]
+    C1 --> C2 --> C3 --> C4
+    C3 --> C5
+    CL["Latency: &lt;1ms after initial connection"]
+    CF["Failure: cached values (LDU), then defaults"]
+    C4 -.-> CL
+    C4 -.-> CF
+  end
 
-1. SDK initializes, connects to LaunchDarkly streaming endpoint
-2. LD sends all flag values for this user context via Server-Sent Events
-3. SDK caches flags in memory
-4. flag.variation() call: synchronous lookup from in-memory cache
-5. When flag changes: LD pushes update via SSE, SDK updates cache immediately
+  subgraph Server["LaunchDarkly server-side (backend)"]
+    S1["SDK init → fetch all flag rules"]
+    S2["Build evaluation context<br/>(user ID, plan, email, …)"]
+    S3["Evaluate locally — no per-call network"]
+    S4["Poll/stream rule updates (~30s)"]
+    S1 --> S2 --> S3 --> S4
+    SL["Latency: &lt;0.1ms (local evaluation)"]
+    SF["Failure: last rules until timeout, then defaults"]
+    S3 -.-> SL
+    S3 -.-> SF
+  end
 
-Latency: <1ms (in-memory lookup after initial connection)
-Failure mode: If LD streaming is unavailable, SDK uses cached values (LDU: Last Known Good)
-             Falls back to default values if no cache available
-
-LaunchDarkly server-side evaluation (backend service):
-
-1. SDK initializes, fetches all flag rules from LD
-2. SDK receives all context attributes for the evaluation (user ID, plan, email, etc.)
-3. Evaluation happens locally — all flag logic runs in the SDK process
-4. No network call per flag evaluation
-5. SDK polls for flag rule updates every 30 seconds (or streaming mode)
-
-Latency: <0.1ms (local evaluation)
-Failure mode: If LD is unreachable, SDK uses last fetched rules until timeout,
-             then falls back to default values
+  style Client fill:#0f3460,color:#ffffff
+  style Server fill:#1a472a,color:#ffffff
 ```
 
 The key insight: **modern flag SDKs do not make a network call on every flag evaluation**. The flag rules are cached locally. Evaluation is a local computation. This means flag evaluation overhead is negligible at runtime — the performance concern is the initial SDK initialization time (typically 100–300ms for the first flag fetch), not per-evaluation latency.

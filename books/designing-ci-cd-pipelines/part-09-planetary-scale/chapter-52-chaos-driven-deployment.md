@@ -45,18 +45,22 @@ What would have found this in the canary phase, before the inventory service hap
 
 Traditional chaos engineering is a proactive practice: run chaos experiments against production on a regular schedule to verify resilience. Chaos-driven deployment is different: run chaos experiments specifically against the *canary* instances during the canary phase, before the new version receives more than a small fraction of traffic.
 
-```
-Traditional chaos:
-  Production → chaos experiment → find failures → fix → production
+```mermaid
+flowchart TD
+    subgraph TRAD["Traditional chaos"]
+        TP["Production"] --> TE["chaos experiment"] --> TF["find failures"] --> FX["fix"] --> TP2["production"]
+    end
 
-Chaos-driven deployment:
-  Canary (2% traffic) → chaos experiment against canary → verify resilience
-                              │
-                      ┌───────┴────────────┐
-                      ▼                    ▼
-               Canary handles it      Canary fails it
-               gracefully              → rollback before
-               → advance to 5%          advancing to 5%
+    subgraph CDD["Chaos-driven deployment"]
+        CAN["Canary (2% traffic)"] --> CE["chaos experiment against canary"] --> VR["verify resilience"]
+        CE --> OK["Canary handles it gracefully<br/>→ advance to 5%"]
+        CE --> FAIL["Canary fails it<br/>→ rollback before advancing to 5%"]
+    end
+
+    style TRAD fill:#27272a,color:#e4e4e7
+    style CDD fill:#0f3460,color:#ffffff
+    style OK fill:#1a472a,color:#ffffff
+    style FAIL fill:#533483,color:#ffffff
 ```
 
 The difference: in chaos-driven deployment, the blast radius of a discovered failure is bounded by the canary's traffic share (2%) rather than production traffic (100%).

@@ -42,22 +42,17 @@ Zero users are affected. Zero double charges. One subtle behavior difference cau
 
 In a shadow deployment, production traffic is duplicated: the original request is handled by the production service (whose response is returned to the user), and an identical copy of the request is sent to the shadow service (whose response is discarded). Users see only the production response. The shadow service runs in full production conditions — real load, real data shapes, real edge cases — but has zero user impact.
 
-```
-User ──▶ Request ──▶ Load Balancer / Service Mesh
-                           │
-                    ┌──────┴──────────────────────┐
-                    │                             │
-                    ▼                             ▼
-              Production Service           Shadow Service
-              (live, user-facing)         (new version)
-                    │                             │
-                    │ Response (returned to user)  │ Response (discarded)
-                    │                             │
-                    ▼                             ▼
-                 User ◀─────────────        Diff Engine
-                                                  │
-                                      Logs discrepancies
-                                      Generates comparison report
+```mermaid
+flowchart TB
+    U[User] -->|Request| LB[Load Balancer / Service Mesh]
+    LB --> Prod["Production Service<br/>live, user-facing"]
+    LB --> Shadow["Shadow Service<br/>new version"]
+    Prod -->|Response returned| U
+    Shadow -->|Response discarded| Diff["Diff Engine<br/>Logs discrepancies<br/>Generates comparison report"]
+
+    style Prod fill:#1a472a,color:#ffffff
+    style Shadow fill:#0f3460,color:#ffffff
+    style Diff fill:#533483,color:#ffffff
 ```
 
 The value: shadow mode exercises the new version against real production traffic before any user sees its responses. It catches:

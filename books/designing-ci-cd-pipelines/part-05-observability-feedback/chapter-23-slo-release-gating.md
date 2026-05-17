@@ -44,14 +44,23 @@ An error budget is the amount of unreliability your SLO permits over a given win
 
 The deployment gate logic:
 
-```
-Error Budget Remaining → Deployment Decision
+```mermaid
+flowchart TD
+  EB["Error budget remaining"] --> G50{"> 50%?"}
+  G50 -->|Yes| P1["Proceed — normal deployment risk"]
+  G50 -->|No| G20{"20–50%?"}
+  G20 -->|Yes| P2["Proceed with caution — monitor post-deploy closely"]
+  G20 -->|No| G10{"10–20%?"}
+  G10 -->|Yes| W["Warning — defer non-critical changes"]
+  G10 -->|No| G0{"< 10%?"}
+  G0 -->|Yes| B["Block — explicit override + justification"]
+  G0 -->|No| HB["Hard block — emergency fixes only (break-glass)"]
 
-> 50% remaining:  Proceed. Normal deployment risk is acceptable.
-20–50% remaining: Proceed with extra caution. Monitor post-deploy closely.
-10–20% remaining: Warning. Consider deferring non-critical changes.
-< 10% remaining:  Block. Require explicit override with documented justification.
-= 0% (exhausted):  Hard block. Only emergency fixes with break-glass approval.
+  style P1 fill:#1a472a,color:#ffffff
+  style P2 fill:#0f3460,color:#ffffff
+  style W fill:#533483,color:#ffffff
+  style B fill:#8b0000,color:#ffffff
+  style HB fill:#8b0000,color:#ffffff
 ```
 
 This is not the same as "freeze all deployments when something goes wrong." A deployment freeze is a manual, reactive action. SLO-based gating is an automated, proactive check that runs before every deployment.

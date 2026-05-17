@@ -50,26 +50,39 @@ This chapter covers how to implement blue-green correctly — including the data
 
 Blue-green deployment maintains two production environments — blue and green — that are identical in configuration but differ in the version of the application they run. At any given time, one environment (say, blue) is live, receiving all production traffic. The other (green) is idle, running the new version.
 
-```
-BEFORE DEPLOYMENT:
+```mermaid
+flowchart TB
+    subgraph before["BEFORE DEPLOYMENT"]
+        I1[Internet] --> LB1[Load Balancer]
+        LB1 --> B1["Blue v2.4.0 — LIVE"]
+        G1["Green — IDLE"] -.-> DB1[(Production DB)]
+        B1 --> DB1
+    end
 
-Internet ──▶ Load Balancer ──▶ Blue (v2.4.0) ──▶ Production DB
-                               Green (idle)    ──▶ Production DB
-                               
-DURING DEPLOYMENT:
-1. Deploy v2.4.1 to Green
-2. Run health checks on Green
-3. Run smoke tests on Green
-4. Flip load balancer: Blue → Green
+    subgraph during["DURING DEPLOYMENT"]
+        D1["1. Deploy v2.4.1 to Green"] --> D2["2. Run health checks on Green"]
+        D2 --> D3["3. Run smoke tests on Green"]
+        D3 --> D4["4. Flip load balancer: Blue → Green"]
+    end
 
-AFTER DEPLOYMENT (new version live):
+    subgraph after["AFTER DEPLOYMENT — new version live"]
+        I2[Internet] --> LB2[Load Balancer]
+        LB2 -.-> B2["Blue v2.4.0 — IDLE"]
+        LB2 --> G2["Green v2.4.1 — LIVE"]
+        B2 --> DB2[(Production DB)]
+        G2 --> DB2
+    end
 
-Internet ──▶ Load Balancer ──▶ Blue (v2.4.0, idle) ──▶ Production DB
-                               Green (v2.4.1, live) ──▶ Production DB
+    subgraph rollback["ROLLBACK — if needed"]
+        R1["Flip load balancer: Green → Blue"]
+        R2["Takes: seconds"]
+        R1 --> R2
+    end
 
-ROLLBACK (if needed):
-Flip load balancer: Green → Blue
-Takes: seconds
+    style B1 fill:#1a472a,color:#ffffff
+    style G2 fill:#1a472a,color:#ffffff
+    style G1 fill:#27272a,color:#e4e4e7
+    style B2 fill:#27272a,color:#e4e4e7
 ```
 
 The value proposition: the rollback operation is a load balancer reconfiguration, not a deployment. It takes seconds, not minutes. When something goes wrong, you're not racing to redeploy the previous version — you're clicking a button (or running one command) that routes traffic back to the environment that was working 10 minutes ago.

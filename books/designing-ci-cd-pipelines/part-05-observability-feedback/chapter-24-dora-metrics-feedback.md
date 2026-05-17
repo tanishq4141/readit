@@ -308,22 +308,36 @@ The right question when looking at DORA metrics is not "what's our score?" but "
 
 The valuable process:
 
-```
-Sprint N:
-  1. Pull DORA metrics for the last sprint (per team, per service)
-  2. Identify the one metric that moved in the wrong direction most significantly
-  3. Trace it to a root cause: "CFR increased from 8% to 15% — three of five
-     failures were payment service canary promotions that didn't catch memory leaks"
-  4. Propose a specific pipeline change: "Add 30-minute dwell time + memory growth
-     rate metric to the payment service canary analysis"
-  5. Assign an owner and a sprint
+```mermaid
+flowchart TD
+  subgraph SN["Sprint N — diagnose"]
+    N1["Pull DORA metrics<br/>(per team, per service)"]
+    N2["Pick worst-moving metric"]
+    N3["Trace to root cause"]
+    N4["Propose specific pipeline change"]
+    N5["Assign owner + sprint"]
+    N1 --> N2 --> N3 --> N4 --> N5
+  end
 
-Sprint N+1:
-  1. Implement the pipeline change
-  2. Measure the metric in Sprint N+2
+  subgraph SN1["Sprint N+1 — implement"]
+    I1["Implement pipeline change"]
+    I2["Plan measurement for Sprint N+2"]
+    I1 --> I2
+  end
 
-Sprint N+2:
-  1. Did the metric improve? If yes: reinforce. If no: investigate further.
+  subgraph SN2["Sprint N+2 — verify"]
+    V1{"Metric improved?"}
+    V2["Reinforce the change"]
+    V3["Investigate further"]
+    V1 -->|Yes| V2
+    V1 -->|No| V3
+  end
+
+  SN --> SN1 --> SN2
+
+  style SN fill:#0f3460,color:#ffffff
+  style SN1 fill:#533483,color:#ffffff
+  style SN2 fill:#1a472a,color:#ffffff
 ```
 
 This is not a management reporting process. It's an engineering improvement process. The DORA dashboard is an input to a decision, not the output of a decision.

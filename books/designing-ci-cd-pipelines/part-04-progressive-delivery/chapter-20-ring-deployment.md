@@ -44,24 +44,19 @@ This chapter covers ring deployment — what it is, how to implement it, and how
 
 A ring deployment is a concentric deployment model where each ring represents a progressively wider user population. Changes deploy to Ring 0 first. After validation, they promote to Ring 1. Then Ring 2. Finally Ring N (all users).
 
-```
-Ring 0 (Dogfood): Internal employees
-    │  ~100–1,000 users. High tolerance for bugs. Fast feedback.
-    │  Dwell: 24–48 hours
-    │
-    ▼
-Ring 1 (Early Adopters): Opt-in customers with high risk tolerance
-    │  ~1–5% of user base. Expect preview builds. Report bugs actively.
-    │  Dwell: 3–7 days
-    │
-    ▼
-Ring 2 (Limited GA): Broad customer base, excluding the most sensitive
-    │  ~30–50% of user base. Normal users. Expect stable software.
-    │  Dwell: 3–7 days
-    │
-    ▼
-Ring 3 (Full GA): Everyone
-     100% of users. Full blast radius. No return.
+```mermaid
+flowchart TD
+    R0["Ring 0 — Dogfood<br/>Internal employees · ~100–1,000 users<br/>High tolerance for bugs · Dwell: 24–48 hours"]
+    R1["Ring 1 — Early Adopters<br/>Opt-in customers · ~1–5% of user base<br/>Dwell: 3–7 days"]
+    R2["Ring 2 — Limited GA<br/>Broad customer base · ~30–50%<br/>Dwell: 3–7 days"]
+    R3["Ring 3 — Full GA<br/>Everyone · 100% of users<br/>Full blast radius — no return"]
+
+    R0 --> R1 --> R2 --> R3
+
+    style R0 fill:#0f3460,color:#ffffff
+    style R1 fill:#0f3460,color:#ffffff
+    style R2 fill:#1a472a,color:#ffffff
+    style R3 fill:#8b0000,color:#ffffff
 ```
 
 The key difference from canary deployment: **canary uses random percentage routing** (1% of all requests); **rings use user segment routing** (all requests from a specific user population).
@@ -78,12 +73,18 @@ This distinction matters for two reasons:
 
 Microsoft runs ring deployments for Windows, Office 365, and Azure at a scale that defines the pattern's upper limits. Their ring structure for Azure service updates:
 
-```
-Canary (Ring 0): ~0.5% — Microsoft internal Azure subscriptions
-PreProd (Ring 1): ~2%  — Select Microsoft production workloads
-EarlyAdopter (Ring 2): ~8% — Customers who opt into preview programs
-Prod (Ring 3): ~40%    — First half of general GA rollout
-Full Prod (Ring 4): 100% — Complete GA
+```mermaid
+flowchart TD
+    M0["Canary Ring 0 — ~0.5%<br/>Microsoft internal Azure subscriptions"]
+    M1["PreProd Ring 1 — ~2%<br/>Select Microsoft production workloads"]
+    M2["EarlyAdopter Ring 2 — ~8%<br/>Customers in preview programs"]
+    M3["Prod Ring 3 — ~40%<br/>First half of general GA rollout"]
+    M4["Full Prod Ring 4 — 100%<br/>Complete GA"]
+
+    M0 --> M1 --> M2 --> M3 --> M4
+
+    style M0 fill:#0f3460,color:#ffffff
+    style M4 fill:#1a472a,color:#ffffff
 ```
 
 For each ring, Microsoft defines:
@@ -269,15 +270,13 @@ ring_promotions:
 Mobile rings are implemented differently because of App Store constraints — you can't route 30% of iOS users to a different binary without going through App Store review. The mobile ring model uses:
 
 **Phased App Store rollouts** for the outer rings:
-```
-App Store Connect → Phased Release settings:
-Day 1: 1% of eligible users
-Day 2: 2%
-Day 3: 5%
-Day 7: 10%
-Day 14: 20%
-Day 30: 50%
-Day 30+: 100%
+```mermaid
+flowchart LR
+    D1["Day 1 — 1%"] --> D2["Day 2 — 2%"] --> D3["Day 3 — 5%"]
+    D3 --> D7["Day 7 — 10%"] --> D14["Day 14 — 20%"]
+    D14 --> D30["Day 30 — 50%"] --> D30p["Day 30+ — 100%"]
+
+    style D30p fill:#1a472a,color:#ffffff
 ```
 
 Apple's phased release can be paused at any percentage if crash rates spike. This is Ring 2 → Ring 3 automation managed by App Store infrastructure rather than your own pipeline.

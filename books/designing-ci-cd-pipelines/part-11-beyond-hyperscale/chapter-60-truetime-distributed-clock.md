@@ -39,17 +39,15 @@ How does Google achieve this bound?
 
 **Two-layer time synchronization**: GPS provides the reference; atomic clocks maintain accuracy between GPS signal updates. The combination provides time accuracy of ~1 microsecond, and the interval width (the uncertainty bound) is kept to 1–7ms by conservative accounting for all possible error sources.
 
-```
-TrueTime API:
+```mermaid
+flowchart LR
+  subgraph API["TrueTime API"]
+    NOW["TT.now()<br/>→ TimeInterval{earliest, latest}<br/>ε ≤ 7ms guaranteed"]
+    AFTER["TT.after(t)<br/>→ now.earliest &gt; t"]
+    BEFORE["TT.before(t)<br/>→ now.latest &lt; t"]
+  end
 
-TT.now()  → TimeInterval{earliest: time_a, latest: time_a + ε}
-              where ε ≤ 7ms (guaranteed)
-              
-TT.after(t)   → True if the actual current time is definitely after t
-                 = TT.now().earliest > t
-
-TT.before(t)  → True if the actual current time is definitely before t
-                 = TT.now().latest < t
+  style API fill:#0f3460,color:#ffffff
 ```
 
 ---
@@ -110,17 +108,15 @@ def flip_flag_at_precisely(
 
 For organizations that cannot run GPS receivers in their data centers, the accuracy hierarchy:
 
-```
-Clock Source         | Accuracy      | Infrastructure                  | Use Case
----------------------|---------------|----------------------------------|----------
-GPS receivers        | ~1 μs         | Hardware in each DC              | Google Spanner, TrueTime
-GPS + atomic clock   | ~100 ns       | Hardware in each DC              | Google TrueTime
-PTP (IEEE 1588v2)   | ~1 μs         | Software + network hardware      | Financial exchanges
-PTP with hardware    | ~100 ns       | Dedicated network + NICs         | High-frequency trading
-NTP (chrony)         | 1–10 ms       | Software only, network access    | Most production servers
-NTP (ntpd)          | 10–50 ms      | Software only                    | Legacy systems
-Software clock       | ±minutes      | Nothing, just drift              | Dev environments
-```
+| Clock source | Accuracy | Infrastructure | Use case |
+|--------------|----------|----------------|----------|
+| GPS receivers | ~1 μs | Hardware in each DC | Google Spanner, TrueTime |
+| GPS + atomic clock | ~100 ns | Hardware in each DC | Google TrueTime |
+| PTP (IEEE 1588v2) | ~1 μs | Software + network hardware | Financial exchanges |
+| PTP with hardware | ~100 ns | Dedicated network + NICs | High-frequency trading |
+| NTP (chrony) | 1–10 ms | Software only, network access | Most production servers |
+| NTP (ntpd) | 10–50 ms | Software only | Legacy systems |
+| Software clock | ±minutes | None (drift) | Dev environments |
 
 For most deployment coordination scenarios, NTP with chrony (1–10ms accuracy) is sufficient. The TrueTime approach is necessary only when you need sub-millisecond coordination guarantees.
 

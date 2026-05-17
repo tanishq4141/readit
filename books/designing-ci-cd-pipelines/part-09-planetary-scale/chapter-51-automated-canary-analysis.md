@@ -36,22 +36,25 @@ Automated Canary Analysis (ACA) removes the human from the routine promotion/rol
 
 Automated Canary Analysis continuously evaluates whether the canary instance is performing significantly worse than the baseline (the running stable version) across a set of configured metrics. The decision — promote or rollback — is made by the analysis system, not a human.
 
-```
-ACA Decision Flow:
+```mermaid
+flowchart TD
+    C1["Canary deployed at 1% traffic"]
+    CMP["Every 5 minutes: Compare canary metrics to baseline metrics"]
+    ADV["Advance (1% → 5% → 25% → 100%)"]
+    RB["Automatic rollback to 0%"]
+    OBS["Continue observing"]
+    ESC["Human escalation: Inconclusive. Human review needed."]
 
-Canary deployed at 1% traffic
-    │
-    ▼
-Every 5 minutes: Compare canary metrics to baseline metrics
-    │
-    ├─ Canary significantly better than baseline? ──▶ Advance (1% → 5% → 25% → 100%)
-    │
-    ├─ Canary significantly worse than baseline? ──▶ Automatic rollback to 0%
-    │
-    └─ Difference is not statistically significant? ──▶ Continue observing
-         │
-         └─ After configured max observation time with no clear signal?
-              ──▶ Human escalation: "Inconclusive. Human review needed."
+    C1 --> CMP
+    CMP -->|"Canary significantly better than baseline?"| ADV
+    CMP -->|"Canary significantly worse than baseline?"| RB
+    CMP -->|"Difference not statistically significant?"| OBS
+    OBS -->|"After max observation time with no clear signal"| ESC
+
+    style C1 fill:#0f3460,color:#ffffff
+    style ADV fill:#1a472a,color:#ffffff
+    style RB fill:#533483,color:#ffffff
+    style ESC fill:#27272a,color:#e4e4e7
 ```
 
 The statistical test determines "significantly worse/better." Simple threshold comparisons ("error rate > 1% → fail") are insufficient because they don't account for baseline variance. If the baseline error rate is 0.8%, a canary at 1.0% might look "worse than 1%", but the difference isn't statistically meaningful given normal variance.

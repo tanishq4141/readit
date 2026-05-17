@@ -261,26 +261,34 @@ runs:
 
 The "golden path" (a term from Backstage/Spotify's platform engineering philosophy) is the opinionated, well-maintained path that platform teams provide for service teams. Using the golden path means: your CI pipeline works correctly, is secure, and handles platform requirements. Deviating from the golden path is allowed but means the service team takes on the maintenance burden.
 
-```
-Golden Path CI pipeline (myorg/platform-templates):
-  ✓ Language-appropriate linting
-  ✓ Unit + integration tests
-  ✓ Critical CVE dependency audit (mandatory)
-  ✓ Container image build with hermetic builds
-  ✓ Image push to ECR with immutable tags
-  ✓ SBOM generation (Chapter 46)
-  ✓ Deployment event emission (Chapter 25)
-  ✓ Audit log write
+```mermaid
+flowchart LR
+  subgraph GP["Golden Path (platform-templates)"]
+    GP1["✓ Lint"]
+    GP2["✓ Unit + integration tests"]
+    GP3["✓ CVE audit (mandatory)"]
+    GP4["✓ Hermetic image build"]
+    GP5["✓ ECR immutable tags"]
+    GP6["✓ SBOM (Ch. 46)"]
+    GP7["✓ Deploy events (Ch. 25)"]
+    GP8["✓ Audit log"]
+    GP1 --> GP2 --> GP3 --> GP4 --> GP5 --> GP6 --> GP7 --> GP8
+  end
 
-Custom pipeline (service team owns it):
-  ? Language-appropriate linting (might be different tool)
-  ? Unit + integration tests (might be different framework)
-  ✗ Critical CVE dependency audit (must manually add)
-  ? Container image build (might use non-hermetic pattern)
-  ? Image push (might use mutable tags)
-  ✗ SBOM generation (might not exist)
-  ✗ Deployment event emission (won't integrate with observability)
-  ✗ Audit log (no audit trail)
+  subgraph CP["Custom pipeline (team-owned)"]
+    CP1["? Lint tool may differ"]
+    CP2["? Test framework may differ"]
+    CP3["✗ CVE audit — manual"]
+    CP4["? Build may be non-hermetic"]
+    CP5["? Tags may be mutable"]
+    CP6["✗ SBOM often missing"]
+    CP7["✗ No observability integration"]
+    CP8["✗ No audit trail"]
+    CP1 --> CP2 --> CP3 --> CP4 --> CP5 --> CP6 --> CP7 --> CP8
+  end
+
+  style GP fill:#1a472a,color:#ffffff
+  style CP fill:#533483,color:#ffffff
 ```
 
 The golden path provides free compliance: any service on the template automatically satisfies security requirements because those requirements are in the template. Custom pipelines must implement compliance manually.
@@ -291,25 +299,24 @@ The golden path provides free compliance: any service on the template automatica
 
 Pipeline templates must be versioned. A breaking change to a template (removing a step, changing a required input) cannot be applied to all consuming services simultaneously without coordination.
 
-```
-Template versioning strategy:
+```mermaid
+flowchart TD
+  subgraph Releases["platform-templates releases"]
+    V1["v1.x — security patches only"]
+    V2["v2.x — current stable"]
+    V3["v3.x-rc — next major (breaking)"]
+  end
 
-myorg/platform-templates releases:
-  v1.x → original template (actively maintained, security patches only)
-  v2.x → current stable (new features, dependency audit added)
-  v3.x-rc → next major (breaking: new secret requirement, migration guide provided)
+  P1["Phase 1: Release v2 + migration guide"] --> P2["Phase 2: Services migrate @v1 → @v2 (90 days)"]
+  P2 --> P3["Phase 3: v1 security-only maintenance"]
+  P3 --> P4["Phase 4: v1 deprecated (180 days)<br/>automation opens blocking PRs"]
+  P4 --> P5["Phase 5: v1 archived"]
 
-Migration path:
-  Phase 1: Release v2, publish migration guide
-  Phase 2: Services migrate from @v1 to @v2 on their own schedule (90 days)
-  Phase 3: v1 enters security-only maintenance mode
-  Phase 4: v1 deprecated (180 days), services that haven't migrated get a blocking PR opened by automation
-  Phase 5: v1 archived
+  PIN["Services pin major version:<br/>ci-standard.yml@v2 → v2.x patches auto;<br/>v3 requires explicit migration"]
 
-Services reference templates with pinned major versions:
-  uses: myorg/platform-templates/.github/workflows/ci-standard.yml@v2
-  # @v2 automatically picks up v2.x patch releases
-  # Major version bump (v3) requires explicit service migration
+  style V2 fill:#1a472a,color:#ffffff
+  style V3 fill:#533483,color:#ffffff
+  style P5 fill:#0f3460,color:#ffffff
 ```
 
 ---

@@ -121,38 +121,23 @@ An agent that executes multi-step tasks in a production environment — "investi
 
 The right architecture for agentic CI/CD today treats LLMs as advisors in a human-reviewed loop, not as autonomous actors:
 
-```
-Production Metrics
-    │
-    ▼
-Anomaly Detection (rule-based)
-    │
-    │ metric regression detected
-    ▼
-LLM Agent: Analyze
-    │
-    │ 1. Fetch relevant logs, metrics, recent deploys
-    │ 2. Identify likely root cause
-    │ 3. Generate candidate fixes (code change, config change, rollback)
-    │ 4. Assess blast radius of each candidate
-    │
-    ▼
-Analysis Report generated
-    │
-    ▼
-Human Engineer: Review
-    │
-    │ Engineer reviews the analysis and candidates
-    │ Selects or modifies the proposed fix
-    │
-    ▼
-Approved Fix → Standard Pipeline (human-triggered)
-    │
-    ▼
-Fix deployed via normal deployment pipeline with full audit trail
-    │
-    ▼
-Outcome logged → improves agent's next analysis
+```mermaid
+flowchart TD
+    A[Production Metrics] --> B[Anomaly Detection<br/>rule-based]
+    B -->|metric regression detected| C[LLM Agent: Analyze]
+    C --> C1[Fetch logs, metrics, recent deploys]
+    C --> C2[Identify likely root cause]
+    C --> C3[Generate candidate fixes]
+    C --> C4[Assess blast radius of each candidate]
+    C1 & C2 & C3 & C4 --> D[Analysis Report generated]
+    D --> E[Human Engineer: Review<br/>select or modify proposed fix]
+    E --> F[Approved Fix → Standard Pipeline<br/>human-triggered]
+    F --> G[Fix deployed via normal pipeline<br/>full audit trail]
+    G --> H[Outcome logged → improves<br/>agent's next analysis]
+
+    style C fill:#533483,color:#ffffff
+    style E fill:#0f3460,color:#ffffff
+    style G fill:#1a472a,color:#ffffff
 ```
 
 This is the pattern from Chapter 26 (incident-driven feedback loop) with an LLM in the analysis phase, not the execution phase. The agent dramatically accelerates the "understand what happened and what to do about it" work. The human maintains control of "execute the fix."

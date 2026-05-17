@@ -44,33 +44,20 @@ Nobody had read the plan. They ran `terraform apply` directly. The security grou
 
 The core principle of IaC promotion: **a Terraform plan file is an artifact that captures exactly what `terraform apply` will do, including all additions, changes, and destructions**. This plan can be reviewed before being applied, just as a code diff is reviewed before being merged.
 
-```
-IaC Promotion Workflow:
+```mermaid
+flowchart TD
+    A1["PR opened"]
+    A2["terraform plan runs in CI<br/>+3 to add, ~1 to change, -0 to destroy"]
+    A3["Plan posted as PR comment<br/>Atlantis / Terraform Cloud"]
+    A4["Engineer reviews plan diff<br/>Check destructions and unexpected changes"]
+    A5["PR approval from at least one other engineer"]
+    A6["terraform apply in CI<br/>Uses the saved plan file"]
+    A7["Apply output posted as PR comment"]
+    A8["PR merged"]
 
-PR opened
-    │
-    ▼
-terraform plan (runs in CI)
-    │
-    ├─ Plan output: +3 to add, ~1 to change, -0 to destroy
-    │
-    ▼
-Plan posted as PR comment (Atlantis / Terraform Cloud)
-    │
-    ▼
-Engineer reviews plan diff: checks destructions, unexpected changes
-    │
-    ▼
-PR approval from at least one other engineer
-    │
-    ▼
-terraform apply (runs in CI, uses the saved plan file)
-    │
-    ▼
-Apply output posted as PR comment
-    │
-    ▼
-PR merged
+    A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7 --> A8
+
+    style A6 fill:#1a472a,color:#ffffff
 ```
 
 The plan file is the artifact. The `apply` command uses the saved plan file, not a fresh plan — ensuring that what was reviewed is exactly what gets applied (no drift between plan and apply due to concurrent changes).
@@ -340,14 +327,18 @@ Option 1 is usually safer — it preserves whatever the manual change was doing 
 
 Infrastructure changes should follow the same promotion pattern as application changes: staging → production, with automated validation at each boundary.
 
-```
-┌─────────────────┐     ┌───────────────────┐     ┌──────────────────┐
-│    dev.tfvars   │     │  staging.tfvars    │     │  prod.tfvars     │
-│  (small, cheap) │────▶│  (mid-scale)       │────▶│  (full scale)    │
-│  auto-apply     │     │  plan review req.  │     │  2 approvals req │
-└─────────────────┘     └───────────────────┘     └──────────────────┘
+```mermaid
+flowchart LR
+    Dev["dev.tfvars<br/>small, cheap<br/>auto-apply"]
+    Stg["staging.tfvars<br/>mid-scale<br/>plan review required"]
+    Prod["prod.tfvars<br/>full scale<br/>2 approvals required"]
+    Gate["Promotion gate:<br/>staging healthy 24h before prod apply"]
 
-Promotion gate: staging must be healthy for 24h before production apply is allowed.
+    Dev --> Stg --> Prod
+    Stg -.-> Gate
+
+    style Dev fill:#1a472a,color:#ffffff
+    style Prod fill:#0f3460,color:#ffffff
 ```
 
 ---

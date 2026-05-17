@@ -20,27 +20,23 @@ A **database migration** cannot simply be rolled back by redeploying the previou
 
 ## Chapter Map
 
-```
-Chapter 27: Expand-and-Contract Database Migration
-    │  Foundation: database changes must be backward-compatible
-    │  across the deployment transition window.
-    │  Referenced by: Ch 17 (Blue-Green), Ch 13 (Promotion)
-    │
-Chapter 28: IaC Promotion
-    │  Infrastructure changes follow the same promotion pattern
-    │  as application changes, with plan-as-artifact.
-    │
-Chapter 29: Serverless Cold-Start & Alias
-    │  Canary-style deployment for Lambda/Cloud Functions.
-    │
-Chapter 30: GitOps at the Edge
-    │  Pull-based deployment for devices with unreliable connectivity.
-    │
-Chapter 31: Multi-Region Active-Active
-    │  Deployment sequencing across fault domains with data consistency.
-    │
-Chapter 32: Mobile Release Train
-    App Store constraints + OTA updates + forced upgrades.
+```mermaid
+flowchart TD
+    Ch27["Chapter 27: Expand-and-Contract DB Migration<br/>Backward-compatible schema changes across deploy window<br/>Referenced by Ch 17 Blue-Green, Ch 13 Promotion"]
+    Ch28["Chapter 28: IaC Promotion<br/>Infrastructure changes with plan-as-artifact"]
+    Ch29["Chapter 29: Serverless Cold-Start & Alias<br/>Canary-style deployment for Lambda / Cloud Functions"]
+    Ch30["Chapter 30: GitOps at the Edge<br/>Pull-based deployment for unreliable connectivity"]
+    Ch31["Chapter 31: Multi-Region Active-Active<br/>Deployment sequencing across fault domains"]
+    Ch32["Chapter 32: Mobile Release Train<br/>App Store constraints + OTA updates + forced upgrades"]
+
+    Ch27 --> Ch28 --> Ch29 --> Ch30 --> Ch31 --> Ch32
+
+    style Ch27 fill:#0f3460,color:#ffffff
+    style Ch28 fill:#0f3460,color:#ffffff
+    style Ch29 fill:#1a472a,color:#ffffff
+    style Ch30 fill:#0f3460,color:#ffffff
+    style Ch31 fill:#0f3460,color:#ffffff
+    style Ch32 fill:#1a472a,color:#ffffff
 ```
 
 ## Chapters in This Part

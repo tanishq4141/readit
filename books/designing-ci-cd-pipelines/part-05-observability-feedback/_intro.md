@@ -20,26 +20,24 @@ They form a complete feedback loop: emit → measure → correlate → improve.
 
 ## Chapter Map
 
-```
-Production SLO State
-        │
-        ▼
-Chapter 23: SLO-Based Release Gating
-    (SLO health → deployment permission)
-        │
-        ├────────────────────────────▶ Chapter 24: DORA Metrics Feedback
-        │                              (pipeline events → DORA measurement
-        │                               → pipeline design improvements)
-        │
-        ▼
-Chapter 25: Deployment Observability
-    (deploy event → metric correlation
-     → impact detection within minutes)
-        │
-        ▼
-Chapter 26: Incident-Driven Feedback
-    (incidents → postmortems
-     → concrete pipeline changes)
+```mermaid
+flowchart TD
+    SLO["Production SLO State"]
+    Ch23["Chapter 23: SLO-Based Release Gating<br/>SLO health → deployment permission"]
+    Ch24["Chapter 24: DORA Metrics Feedback<br/>Pipeline events → DORA measurement<br/>→ pipeline design improvements"]
+    Ch25["Chapter 25: Deployment Observability<br/>Deploy event → metric correlation<br/>→ impact detection within minutes"]
+    Ch26["Chapter 26: Incident-Driven Feedback<br/>Incidents → postmortems<br/>→ concrete pipeline changes"]
+
+    SLO --> Ch23
+    Ch23 --> Ch24
+    Ch23 --> Ch25
+    Ch25 --> Ch26
+
+    style SLO fill:#0f3460,color:#ffffff
+    style Ch23 fill:#0f3460,color:#ffffff
+    style Ch24 fill:#1a472a,color:#ffffff
+    style Ch25 fill:#0f3460,color:#ffffff
+    style Ch26 fill:#1a472a,color:#ffffff
 ```
 
 ## Prerequisites

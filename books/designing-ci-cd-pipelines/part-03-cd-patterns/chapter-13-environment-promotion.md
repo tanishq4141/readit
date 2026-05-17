@@ -46,24 +46,28 @@ The most important conceptual distinction in environment promotion: **you promot
 
 This principle has a corollary that many teams violate: **environment-specific configuration is separate from the artifact**. The database URL, the log level, the feature flag defaults, the API endpoint configurations — these are injected at deployment time via environment variables, ConfigMaps, or a configuration service. They are not baked into the image. If they were baked into the image, you'd need to rebuild for each environment, destroying the "build once" guarantee.
 
-```
-WRONG (rebuilding per environment):
+```mermaid
+flowchart LR
+    subgraph wrong["WRONG — rebuilding per environment"]
+        direction LR
+        W0[commit] --> W1[build-dev] --> W2[test-dev] --> W3[build-staging] --> W4[test-staging] --> W5[build-prod] --> W6[deploy-prod]
+        W1 -.->|myapp:dev-sha123| W3
+        W3 -.->|myapp:staging-sha123| W5
+        W5 -.->|myapp:prod-sha123| W6
+    end
 
-commit ──▶ build-dev ──▶ test-dev ──▶ build-staging ──▶ test-staging ──▶ build-prod ──▶ deploy-prod
-                                         ↑ Different image!                     ↑ Different image again!
-           myapp:dev-sha123              myapp:staging-sha123                   myapp:prod-sha123
+    subgraph correct["CORRECT — promoting artifact"]
+        direction TB
+        C0[commit] --> C1[build — myapp:sha123 built once]
+        C1 --> C2[ephemeral PR env<br/>image: myapp:sha123 · config: dev]
+        C2 -->|tests pass| C3[staging<br/>image: myapp:sha123 · config: staging]
+        C3 -->|integration tests pass| C4[production<br/>image: myapp:sha123 · config: prod]
+    end
 
-CORRECT (promoting artifact):
-
-commit ──▶ build ──────────────────────────────────────────────────────────────────────────────────
-                    myapp:sha123 (one image, built once)
-              │
-              ▼
-          ephemeral PR env ──▶ [tests pass] ──▶ staging ──▶ [integration tests pass] ──▶ production
-              │                                     │                                        │
-              └── image: myapp:sha123               └── image: myapp:sha123                 └── image: myapp:sha123
-                  config: dev                           config: staging                          config: prod
-                  injected at deploy                    injected at deploy                       injected at deploy
+    style W3 fill:#8b0000,color:#ffffff
+    style W5 fill:#8b0000,color:#ffffff
+    style C1 fill:#1a472a,color:#ffffff
+    style C4 fill:#1a472a,color:#ffffff
 ```
 
 ---

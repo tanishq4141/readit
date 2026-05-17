@@ -18,30 +18,17 @@ Without Chapter 1, Chapter 2 reads like a list of dogma. Without Chapter 2, Chap
 
 ## Chapter Map
 
-```
-Chapter 1: The Evolution of CI, CD, and CT
-    │
-    │  Establishes: vocabulary, historical context, the three disciplines
-    │  Answers: "Where did all this come from? Why does it work this way?"
-    │
-    ▼
-Chapter 2: Core Principles
-    │
-    │  Establishes: trunk-based dev, hermetic builds, immutable artifacts,
-    │               the deployment safety contract, the testing philosophy
-    │  Answers: "What does a well-designed pipeline actually guarantee?"
-    │
-    ▼
-    ┌─────────────────────────────────────────────────────┐
-    │  Part II (CI Patterns) — build on Chapter 2's       │
-    │  hermetic and reproducibility principles             │
-    │                                                     │
-    │  Part III (CD Patterns) — build on Chapter 2's      │
-    │  safety contract and immutable artifact axioms       │
-    │                                                     │
-    │  All subsequent parts — assume Chapter 1's          │
-    │  vocabulary (CI/CD/CT) is understood                 │
-    └─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Ch1["Chapter 1: The Evolution of CI, CD, and CT<br/>Establishes: vocabulary, historical context, the three disciplines<br/>Answers: Where did all this come from? Why does it work this way?"]
+    Ch2["Chapter 2: Core Principles<br/>Establishes: trunk-based dev, hermetic builds, immutable artifacts,<br/>deployment safety contract, testing philosophy<br/>Answers: What does a well-designed pipeline actually guarantee?"]
+    Next["Part II (CI Patterns) — build on Chapter 2's hermetic and reproducibility principles<br/>Part III (CD Patterns) — build on Chapter 2's safety contract and immutable artifact axioms<br/>All subsequent parts — assume Chapter 1's vocabulary (CI/CD/CT) is understood"]
+
+    Ch1 --> Ch2 --> Next
+
+    style Ch1 fill:#0f3460,color:#ffffff
+    style Ch2 fill:#0f3460,color:#ffffff
+    style Next fill:#1a472a,color:#ffffff
 ```
 
 Read Chapter 1 before Chapter 2. Read both before anything else.

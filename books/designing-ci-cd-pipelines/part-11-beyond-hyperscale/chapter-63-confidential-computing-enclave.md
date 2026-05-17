@@ -1,4 +1,5 @@
 # Chapter 63: The Confidential Computing & Zero-Trust Enclave Pattern
+
 *Part XI: Beyond Hyperscale — The Absolute Frontier*
 
 > *"Traditional cloud security assumes the provider is trustworthy.
@@ -30,31 +31,21 @@ Three major platforms implement confidential computing:
 
 Intel SGX creates **enclaves** — protected regions of memory that the CPU encrypts with a key that never leaves the processor. The memory encryption is done by the Memory Encryption Engine (MEE) in hardware. Even the OS, hypervisor, and physical memory bus see only ciphertext.
 
-```
-SGX Memory Architecture:
+```mermaid
+flowchart LR
+  subgraph PM["Physical Memory"]
+    subgraph PRM["PRM — Processor Reserved Memory (encrypted)"]
+      EPC["EPC — Enclave Page Cache<br/><br/>Your workload runs here.<br/>Hypervisor cannot read it."]
+    end
+    REG["Regular Memory<br/>OS, hypervisor<br/><br/>Can see only ciphertext<br/>of enclave memory"]
+  end
 
-┌─────────────────────────────────────────────────────┐
-│                  Physical Memory                     │
-│                                                      │
-│  ┌────────────────────────┐  ┌────────────────────┐  │
-│  │  PRM (Processor Res.   │  │  Regular Memory    │  │
-│  │  Memory) - encrypted   │  │  (OS, hypervisor)  │  │
-│  │                        │  │                    │  │
-│  │  ┌──────────────────┐  │  │  (can see only     │  │
-│  │  │  EPC (Enclave    │  │  │   ciphertext of    │  │
-│  │  │  Page Cache)     │  │  │   enclave memory)  │  │
-│  │  │                  │  │  └────────────────────┘  │
-│  │  │  Your workload   │  │                          │
-│  │  │  runs here.      │  │                          │
-│  │  │  Hypervisor      │  │                          │
-│  │  │  cannot read it. │  │                          │
-│  │  └──────────────────┘  │                          │
-│  └────────────────────────┘                          │
-└─────────────────────────────────────────────────────┘
-
-CPU has the decryption key. It decrypts on the way to processor registers.
-Memory bus, DRAM, and hypervisor see only encrypted bytes.
+  style PRM fill:#0f3460,color:#ffffff
+  style REG fill:#27272a,color:#e4e4e7
+  style EPC fill:#1a472a,color:#ffffff
 ```
+
+CPU has the decryption key. It decrypts on the way to processor registers. Memory bus, DRAM, and hypervisor see only encrypted bytes.
 
 SGX limitation: the protected memory (EPC) was historically limited to 128MB–256MB on early implementations (up to 512MB on Xeon Scalable 3rd gen). This limited SGX to specific confidential data operations, not full application hosting.
 
@@ -62,27 +53,19 @@ SGX limitation: the protected memory (EPC) was historically limited to 128MB–2
 
 AMD SEV-SNP operates at the VM level (not the application level like SGX). The entire virtual machine's memory is encrypted with a key held in the AMD Secure Processor. The hypervisor sees only ciphertext.
 
-```
-SEV-SNP Architecture:
+```mermaid
+flowchart TB
+  subgraph Host["Host (Cloud Provider)"]
+    HV["Hypervisor<br/>Can schedule the VM. Cannot read its memory."]
+    subgraph CVM["Confidential VM"]
+      Guest["Guest OS + Application (fully encrypted)<br/><br/>AMD Secure Processor holds the key.<br/>Hypervisor access = encrypted ciphertext."]
+    end
+  end
 
-┌──────────────────────────────────────────────────────────┐
-│                    Host (Cloud Provider)                  │
-│                                                           │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │                    Hypervisor                        │  │
-│  │  Can schedule the VM. Cannot read its memory.       │  │
-│  └─────────────────────────────────────────────────────┘  │
-│                                                           │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │               Confidential VM                        │  │
-│  │  ┌─────────────────────────────────────────────┐    │  │
-│  │  │  Guest OS + Application (fully encrypted)   │    │  │
-│  │  │                                             │    │  │
-│  │  │  AMD Secure Processor holds the key.        │    │  │
-│  │  │  Hypervisor access = encrypted ciphertext.  │    │  │
-│  │  └─────────────────────────────────────────────┘    │  │
-│  └─────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────┘
+  style Host fill:#1a1a2e,color:#e4e4e7
+  style HV fill:#533483,color:#ffffff
+  style CVM fill:#0f3460,color:#ffffff
+  style Guest fill:#1a472a,color:#ffffff
 ```
 
 SEV-SNP advantage over SGX: the entire VM is protected, not just a specific memory region. Full application deployment without rewriting for enclave execution.
@@ -91,82 +74,58 @@ SEV-SNP advantage over SGX: the entire VM is protected, not just a specific memo
 
 AWS Nitro Enclaves are isolated VM partitions with no persistent storage, no external network, and no administrator access (even AWS administrators cannot access enclave memory or processes):
 
-```
-AWS Nitro Enclave Architecture:
+```mermaid
+flowchart TB
+  subgraph EC2["EC2 Instance"]
+    subgraph Parent["Parent Instance"]
+      PW["Normal workloads, networking, storage"]
+      subgraph NE["Nitro Enclave"]
+        ENC["Isolated CPU + Memory<br/>No persistent storage<br/>No external network<br/>vsock: local channel only<br/><br/>Only attestable, signed code runs here"]
+      end
+    end
+  end
 
-┌─────────────────────────────────────────────┐
-│              EC2 Instance                    │
-│  ┌─────────────────────────────────────┐    │
-│  │           Parent Instance            │    │
-│  │  Normal workloads, networking,       │    │
-│  │  storage                             │    │
-│  │                                      │    │
-│  │  ┌──────────────────────────────┐   │    │
-│  │  │        Nitro Enclave         │   │    │
-│  │  │  Isolated CPU + Memory       │   │    │
-│  │  │  No persistent storage       │   │    │
-│  │  │  No external network         │   │    │
-│  │  │  vsock: local channel only   │   │    │
-│  │  │                              │   │    │
-│  │  │  Only attestable, signed     │   │    │
-│  │  │  code runs here              │   │    │
-│  │  └──────────────────────────────┘   │    │
-│  └─────────────────────────────────────┘    │
-└─────────────────────────────────────────────┘
-
-AWS infrastructure teams: cannot access enclave memory.
-Parent instance: communicates via vsock only. Cannot access enclave memory.
+  style EC2 fill:#1a1a2e,color:#e4e4e7
+  style Parent fill:#27272a,color:#e4e4e7
+  style NE fill:#0f3460,color:#ffffff
+  style ENC fill:#1a472a,color:#ffffff
 ```
+
+AWS infrastructure teams cannot access enclave memory. The parent instance communicates via vsock only and cannot access enclave memory.
 
 ---
 
 ## Remote Attestation: The End-to-End Flow
 
 Remote attestation is the protocol that allows a workload inside an enclave to cryptographically prove to an external party that it is:
+
 1. Running inside a genuine secure enclave on real hardware
 2. Running a specific, unmodified version of the intended code
 3. Not tampered with by the host OS or hypervisor
 
 The full attestation flow for AWS Nitro Enclaves:
 
-```
-Step 1: Enclave generates attestation document
+```mermaid
+flowchart TD
+  subgraph S1["Step 1: Enclave generates attestation document"]
+    E1["Nitro Enclave<br/>Requests attestation from Nitro Hypervisor<br/>Provides user-supplied nonce"]
+    H1["Nitro Hypervisor builds attestation document<br/>PCRs: enclave image, kernel, app hashes<br/>Nonce + ephemeral public key + instance metadata<br/>Signed by AWS Nitro hardware root of trust"]
+    E1 --> H1
+  end
 
-  Nitro Enclave
-  ├─ Requests attestation from Nitro Hypervisor
-  └─ Provides a user-supplied nonce (random bytes from the verifier)
+  subgraph S2["Step 2: Verifier validates attestation"]
+    V1["External verifier (KMS, secrets service, counterparty)<br/>Verify certificate chain to AWS Nitro root<br/>Verify nonce matches (anti-replay)<br/>Verify PCR0 matches expected enclave image hash"]
+  end
 
-  Nitro Hypervisor
-  ├─ Generates attestation document containing:
-  │   ├─ PCRs (Platform Configuration Registers): SHA-384 measurements of
-  │   │   ├─ PCR0: enclave image file hash (the exact code running)
-  │   │   ├─ PCR1: Linux kernel and bootstrap hash
-  │   │   ├─ PCR2: application code hash
-  │   │   └─ PCR3-7: additional measurements
-  │   ├─ The user-supplied nonce (proves freshness — not a replay)
-  │   ├─ Public key from the enclave's ephemeral key pair
-  │   └─ Instance metadata (region, account ID)
-  └─ Signs the document with a certificate chain rooted in
-     AWS Nitro's hardware root of trust (publicly auditable)
+  subgraph S3["Step 3: Secret delivered to enclave"]
+    D1["Secret encrypted with enclave ephemeral public key<br/>Only the enclave can decrypt — not host or cloud provider"]
+  end
 
-Step 2: Verifier receives and validates the attestation document
+  S1 --> S2 --> S3
 
-  External Verifier (could be a KMS, a secrets service, or a counterparty)
-  ├─ Verifies the certificate chain to the AWS Nitro root certificate
-  │   (root cert is published by AWS and never changes)
-  ├─ Verifies the nonce matches what was sent (prevents replay attacks)
-  ├─ Verifies PCR0 matches the expected enclave image hash
-  │   (this is the "the right code is running" guarantee)
-  └─ If all checks pass: releases the secret to the enclave's public key
-
-Step 3: Secret delivered to enclave
-
-  The secret (encryption key, API token, model weights) is encrypted
-  with the enclave's ephemeral public key.
-  
-  Only the enclave can decrypt it (it holds the private key).
-  The host cannot decrypt it (it doesn't have the private key).
-  The cloud provider cannot decrypt it (the key never leaves the enclave).
+  style S1 fill:#0f3460,color:#ffffff
+  style S2 fill:#533483,color:#ffffff
+  style S3 fill:#1a472a,color:#ffffff
 ```
 
 ---
@@ -276,6 +235,7 @@ Deploying to confidential enclaves requires several pipeline adaptations:
 ### 1. Enclave Image Signing
 
 The PCR0 value in the attestation document is the hash of the enclave image (EIF — Enclave Image File). The deployment pipeline must:
+
 - Build a reproducible EIF (deterministic build)
 - Record the expected PCR0 value
 - Configure the KMS key policy to only release secrets to enclaves with this PCR0
@@ -407,6 +367,7 @@ Build the pipeline with those scars in mind. The ones you don't inherit, you wil
 *— BOOK_AUTHOR*
 
 ---
+
 *[← Previous: Chapter 62 — The Agentic CI/CD & Self-Evolving Infrastructure Pattern](./chapter-62-agentic-cicd-self-evolving.md)*
 
 ---

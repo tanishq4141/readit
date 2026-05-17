@@ -23,10 +23,17 @@ AWS has publicly documented their use of TLA+ for verifying the internal protoco
 
 A canary deployment protocol can be modeled as a state machine. The states:
 
-```
-IDLE → DEPLOYING → CANARY → 
-  ├─ (canary healthy) → PROMOTING → COMPLETE → IDLE
-  └─ (canary unhealthy) → ROLLING_BACK → COMPLETE → IDLE
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> DEPLOYING
+    DEPLOYING --> CANARY
+    CANARY --> PROMOTING: canary healthy
+    CANARY --> ROLLING_BACK: canary unhealthy
+    PROMOTING --> COMPLETE
+    ROLLING_BACK --> COMPLETE
+    COMPLETE --> IDLE
+    IDLE --> [*]
 ```
 
 The **safety property** we want to guarantee: *"A version is never promoted to 100% of production traffic without first passing canary analysis."*

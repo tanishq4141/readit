@@ -50,31 +50,24 @@ This is the Ephemeral Environment pattern (Chapter 12) implemented as a first-cl
 
 ## The Deployment Pipeline Architecture
 
-```
-Developer pushes to a branch
-    │
-    ▼
-GitHub webhook fires → Vercel CI
-    │
-    ├─ Determine changed packages (pnpm + Turborepo)
-    ├─ Check remote cache for changed package build outputs
-    ├─ Build only uncached packages (parallelized)
-    ├─ Run affected tests (Turborepo --filter)
-    │
-    ▼
-Build artifacts produced (JS bundles, static assets, Edge Functions)
-    │
-    ▼
-Deployment: distribute to edge network
-    ├─ Upload artifacts to Vercel's distributed storage
-    ├─ Update routing table at each edge PoP
-    └─ Generate preview URL
-    │
-    ▼
-GitHub status check updated: preview URL posted to PR
-    │
-    ▼
-Merge to main → production deployment (same pipeline, different routing)
+```mermaid
+flowchart TD
+    A[Developer pushes to a branch] --> B[GitHub webhook fires → Vercel CI]
+    B --> C1[Determine changed packages<br/>pnpm + Turborepo]
+    B --> C2[Check remote cache for<br/>changed package build outputs]
+    B --> C3[Build only uncached packages<br/>parallelized]
+    B --> C4[Run affected tests<br/>Turborepo --filter]
+    C1 & C2 & C3 & C4 --> D[Build artifacts produced<br/>JS bundles, static assets, Edge Functions]
+    D --> E[Deployment: distribute to edge network]
+    E --> E1[Upload artifacts to<br/>Vercel distributed storage]
+    E --> E2[Update routing table<br/>at each edge PoP]
+    E --> E3[Generate preview URL]
+    E1 & E2 & E3 --> F[GitHub status check updated<br/>preview URL posted to PR]
+    F --> G[Merge to main → production deployment<br/>same pipeline, different routing]
+
+    style B fill:#0f3460,color:#ffffff
+    style D fill:#1a472a,color:#ffffff
+    style G fill:#1a472a,color:#ffffff
 ```
 
 The key architectural insight: the pipeline doesn't distinguish between "build" and "deploy" in the traditional sense. Building IS deploying — the build output is directly the edge-deployable artifact. There's no container registry, no Kubernetes manifest, no Helm chart. The artifact format (JavaScript bundles, Edge Function code, static assets) is the deployment format.

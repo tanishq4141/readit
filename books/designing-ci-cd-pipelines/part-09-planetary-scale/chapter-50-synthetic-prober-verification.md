@@ -42,44 +42,54 @@ A health check answers: "Is the service process running and able to respond to a
 
 A synthetic prober answers: "Can a user in Frankfurt complete a checkout right now using the actual checkout flow?"
 
-```
-Health Check:
-  What it tests: GET /health → 200 OK
-  Who runs it: The load balancer (from the same region as the service)
-  Frequency: Every 5–10 seconds
-  Blast radius of a failure: Pod is removed from rotation
-  What it misses: Routing misconfiguration in other regions, broken
-                  API endpoint logic, downstream dependency failures,
-                  geo-specific issues
+```mermaid
+flowchart LR
+    subgraph HC["Health Check"]
+        H1["What it tests: GET /health → 200 OK"]
+        H2["Who runs it: Load balancer (same region as service)"]
+        H3["Frequency: Every 5–10 seconds"]
+        H4["Blast radius: Pod removed from rotation"]
+        H5["Misses: Routing misconfig in other regions, broken API logic,<br/>downstream dependency failures, geo-specific issues"]
+        H1 --- H2 --- H3 --- H4 --- H5
+    end
 
-Synthetic Prober:
-  What it tests: POST /api/v3/checkout/complete with a synthetic order
-  Who runs it: A dedicated prober process running globally
-  Frequency: Every 30–60 seconds per region
-  Blast radius of a failure: Deployment blocked or alert fired
-  What it catches: All of the above, plus application logic errors,
-                   dependency failures, and geo-specific routing issues
+    subgraph SP["Synthetic Prober"]
+        S1["What it tests: POST /api/v3/checkout/complete with synthetic order"]
+        S2["Who runs it: Dedicated prober process running globally"]
+        S3["Frequency: Every 30–60 seconds per region"]
+        S4["Blast radius: Deployment blocked or alert fired"]
+        S5["Catches: All of the above, plus application logic errors,<br/>dependency failures, and geo-specific routing issues"]
+        S1 --- S2 --- S3 --- S4 --- S5
+    end
+
+    style HC fill:#27272a,color:#e4e4e7
+    style SP fill:#1a472a,color:#ffffff
 ```
 
 ---
 
 ## Prober Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Prober Orchestrator                         │
-│               (central control, stores probe definitions)        │
-└──────┬───────────────┬───────────────┬───────────────┬──────────┘
-       │               │               │               │
-       ▼               ▼               ▼               ▼
-  Prober               Prober          Prober          Prober
-  us-east-1           eu-west-1       ap-se-1         us-west-2
-       │               │               │               │
-       └───────────────┴───────────────┴───────────────┘
-                               │
-                               ▼
-                         Target Service
-                    (receives synthetic traffic)
+```mermaid
+flowchart TD
+    PO["Prober Orchestrator<br/>(central control, stores probe definitions)"]
+    P1["Prober — us-east-1"]
+    P2["Prober — eu-west-1"]
+    P3["Prober — ap-se-1"]
+    P4["Prober — us-west-2"]
+    TS["Target Service<br/>(receives synthetic traffic)"]
+
+    PO --> P1
+    PO --> P2
+    PO --> P3
+    PO --> P4
+    P1 --> TS
+    P2 --> TS
+    P3 --> TS
+    P4 --> TS
+
+    style PO fill:#0f3460,color:#ffffff
+    style TS fill:#1a472a,color:#ffffff
 ```
 
 Each regional prober executes the same probes from its geographic location. The probe results are aggregated centrally. A failure in eu-west-1 that doesn't appear in us-east-1 is identified as a geo-specific issue — exactly what would have caught the Meridian Commerce problem.

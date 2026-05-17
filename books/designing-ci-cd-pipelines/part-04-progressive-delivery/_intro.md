@@ -16,27 +16,26 @@ All six chapters address the same fundamental problem: how do you give real prod
 
 ## Chapter Map
 
-```
-Chapter 17: Blue-Green
-    │  Simplest progressive model: 0% → 100%, but instantly reversible.
-    │  The foundation all other patterns build on.
-    │
-    ├─────────────────────────▶ Chapter 18: Canary
-    │                            (Blue-green in increments: 1%→5%→25%→100%)
-    │
-    ├─────────────────────────▶ Chapter 19: Rainbow
-    │                            (Blue-green with N concurrent versions)
-    │
-    └─────────────────────────▶ Chapter 20: Ring
-                                 (Blue-green by user segment, not percentage)
+```mermaid
+flowchart TD
+    Ch17["Chapter 17: Blue-Green<br/>Simplest progressive model: 0% → 100%, but instantly reversible.<br/>The foundation all other patterns build on."]
+    Ch18["Chapter 18: Canary<br/>Blue-green in increments: 1%→5%→25%→100%"]
+    Ch19["Chapter 19: Rainbow<br/>Blue-green with N concurrent versions"]
+    Ch20["Chapter 20: Ring<br/>Blue-green by user segment, not percentage"]
+    Ch21["Chapter 21: Feature Flag<br/>Orthogonal to all above: controls visibility, not deployment.<br/>Works WITH any of the above patterns."]
+    Ch22["Chapter 22: Shadow<br/>Copy of production traffic to new version,<br/>no user impact — validation before canary"]
 
-Chapter 21: Feature Flag
-    │  Orthogonal to all above: controls visibility, not deployment.
-    │  Works WITH any of the above patterns.
-    │
-    └─────────────────────────▶ Chapter 22: Shadow
-                                 (Copy of production traffic to new version,
-                                  no user impact — validation before canary)
+    Ch17 --> Ch18
+    Ch17 --> Ch19
+    Ch17 --> Ch20
+    Ch21 --> Ch22
+
+    style Ch17 fill:#0f3460,color:#ffffff
+    style Ch18 fill:#1a472a,color:#ffffff
+    style Ch19 fill:#1a472a,color:#ffffff
+    style Ch20 fill:#1a472a,color:#ffffff
+    style Ch21 fill:#0f3460,color:#ffffff
+    style Ch22 fill:#1a472a,color:#ffffff
 ```
 
 ## Prerequisites

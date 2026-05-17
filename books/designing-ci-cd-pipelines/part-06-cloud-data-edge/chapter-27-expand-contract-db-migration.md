@@ -50,33 +50,17 @@ The root cause: a non-backward-compatible schema change applied during a rolling
 
 Expand-and-Contract (also called Parallel Change) is a four-phase pattern for making schema changes that are safe across a rolling deployment window. The core principle: **at every point in time, the running application code must be compatible with the current database schema**.
 
-```
-Phase 1 — EXPAND:
-  Add the new structure. Keep the old. Both exist simultaneously.
-  Both old and new application code can run.
+```mermaid
+flowchart TD
+    P1["Phase 1 — EXPAND<br/>Add new structure, keep old — both code versions run<br/>Old: reads/writes dob ✅ · New: reads date_of_birth, writes BOTH ✅"]
+    P2["Phase 2 — MIGRATE<br/>Backfill old → new · App still writes to both<br/>No code change required"]
+    P3["Phase 3 — CONTRACT first step<br/>Read only from new · still write to both<br/>Wait for old code instances to drain"]
+    P4["Phase 4 — CONTRACT final<br/>Drop old structure · only new code running<br/>Old code would fail — but not running anymore ✅"]
 
-  Old code: reads/writes dob                    ✅ works (column exists)
-  New code: reads date_of_birth, writes BOTH     ✅ works (both exist)
+    P1 --> P2 --> P3 --> P4
 
-Phase 2 — MIGRATE:
-  Backfill data from old structure to new.
-  Application is still writing to both.
-  No code change required for this phase.
-
-Phase 3 — CONTRACT (first step):
-  Update code to read ONLY from new structure.
-  Still write to old structure for backward compatibility.
-  Wait for all old code instances to drain.
-
-  Old code: reads dob                            ✅ still works (column exists)
-  New code: reads date_of_birth, writes BOTH     ✅ works
-
-Phase 4 — CONTRACT (final step):
-  Remove old structure.
-  Only new code is running.
-
-  New code: reads date_of_birth, writes only it  ✅ works
-  Old code: would fail (dob gone)                ✅ not running anymore
+    style P1 fill:#0f3460,color:#ffffff
+    style P4 fill:#1a472a,color:#ffffff
 ```
 
 Applied to the column rename:
@@ -133,13 +117,18 @@ Each phase is a separate deployment. The total calendar time is longer than a si
 
 Flyway is the most widely used migration tool for Java/JVM applications. It applies versioned SQL migrations in order and tracks which have been applied in a `flyway_schema_history` table.
 
-```
-migrations/
-├── V1__initial_schema.sql
-├── V2__add_user_email_index.sql
-├── V3__expand_add_date_of_birth.sql    ← Phase 1 (expand)
-├── V4__migrate_date_of_birth.sql       ← Phase 2 (backfill)
-└── V5__drop_dob_column.sql             ← Phase 4 (contract, deployed weeks later)
+```mermaid
+flowchart TD
+    V1["V1__initial_schema.sql"]
+    V2["V2__add_user_email_index.sql"]
+    V3["V3__expand_add_date_of_birth.sql<br/>Phase 1 — expand"]
+    V4["V4__migrate_date_of_birth.sql<br/>Phase 2 — backfill"]
+    V5["V5__drop_dob_column.sql<br/>Phase 4 — contract, deployed weeks later"]
+
+    V1 --> V2 --> V3 --> V4 --> V5
+
+    style V3 fill:#0f3460,color:#ffffff
+    style V5 fill:#1a472a,color:#ffffff
 ```
 
 **Decoupling migrations from application deployment:** The expand and backfill migrations (V3, V4) deploy with the application version that writes to both columns. The contract migration (V5) deploys with a later application version after the old code is fully retired.
@@ -261,17 +250,15 @@ ALTER TABLE orders ALTER COLUMN tax_rate SET NOT NULL;
 
 The hardest truth about database migrations: **they are often not reversible**. Once data has been written to a new schema, rolling back the schema requires migrating that data back — which may not be possible if data was deleted, if new data doesn't fit the old schema constraints, or if the migration was destructive.
 
-```
-Migration type          Reversible?  Notes
-────────────────────────────────────────────────────────
-ADD COLUMN (nullable)   ✅ Yes       DROP COLUMN (if no data was written to it yet)
-ADD COLUMN + backfill   ⚠️ Partially  DROP COLUMN loses the backfilled data
-DROP COLUMN             ❌ No        Data is gone (unless backup available)
-RENAME COLUMN           ⚠️ Partially  Rename back, but any writes to new name are in old name
-ADD INDEX               ✅ Yes       DROP INDEX
-ADD NOT NULL CONSTRAINT ⚠️ Partially  Can remove constraint, but requires all rows to be valid first
-CHANGE COLUMN TYPE      ❌ Usually   Type coercion may be lossy (TEXT → VARCHAR(50) truncates)
-```
+| Migration type | Reversible? | Notes |
+|---|---|---|
+| ADD COLUMN (nullable) | ✅ Yes | DROP COLUMN (if no data was written to it yet) |
+| ADD COLUMN + backfill | ⚠️ Partially | DROP COLUMN loses the backfilled data |
+| DROP COLUMN | ❌ No | Data is gone (unless backup available) |
+| RENAME COLUMN | ⚠️ Partially | Rename back, but any writes to new name are in old name |
+| ADD INDEX | ✅ Yes | DROP INDEX |
+| ADD NOT NULL CONSTRAINT | ⚠️ Partially | Can remove constraint, but requires all rows to be valid first |
+| CHANGE COLUMN TYPE | ❌ Usually | Type coercion may be lossy (TEXT → VARCHAR(50) truncates) |
 
 The implication for pipeline design: **rollback in the traditional sense (redeploy previous binary) doesn't work for destructive migrations**. The pipeline must:
 1. Prevent destructive migrations from running until the roll-forward path is verified

@@ -66,28 +66,21 @@ These constraints require a deployment model that:
 
 **Rancher Fleet** is a GitOps continuous delivery system for managing hundreds to thousands of Kubernetes clusters (or K3s nodes) from a central control plane. Each cluster registers with the Fleet controller and periodically pulls its desired state from a Git repository.
 
-```
-Architecture:
+```mermaid
+flowchart TB
+    FC["Fleet Controller — cloud-hosted<br/>Watches Git repo for fleet bundles<br/>Tracks sync status · rollout rings · health checks"]
+    S1["Store 01 — K3s node<br/>POS app"]
+    S2["Store 02 — K3s node<br/>POS app"]
+    SN["Store N — K3s node<br/>POS app"]
 
-┌──────────────────────────────────────────────────┐
-│                Fleet Controller                   │
-│                (cloud-hosted)                     │
-│                                                   │
-│  Watches Git repo for fleet bundles               │
-│  Tracks sync status of all registered clusters    │
-│  Provides rollout rings and health checks         │
-└───────────────────┬──────────────────────────────┘
-                    │  HTTPS (outbound from devices)
-                    │  Devices connect TO Fleet — not vice versa
-                    │
-    ┌───────────────┼────────────────┐
-    ▼               ▼                ▼
-┌────────┐    ┌────────┐       ┌────────┐
-│Store 01│    │Store 02│  ...  │Store N │
-│K3s node│    │K3s node│       │K3s node│
-│        │    │        │       │        │
-│POS app │    │POS app │       │POS app │
-└────────┘    └────────┘       └────────┘
+    FC -->|"HTTPS outbound from devices<br/>Devices connect TO Fleet"| S1
+    FC --> S2
+    FC --> SN
+
+    style FC fill:#0f3460,color:#ffffff
+    style S1 fill:#1a472a,color:#ffffff
+    style S2 fill:#1a472a,color:#ffffff
+    style SN fill:#1a472a,color:#ffffff
 ```
 
 ```yaml

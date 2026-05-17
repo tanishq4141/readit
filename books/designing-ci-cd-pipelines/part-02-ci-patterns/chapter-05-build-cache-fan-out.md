@@ -51,20 +51,27 @@ The fan-out/fan-in model separates a pipeline into three phases:
 
 The model is not new — it is the standard architecture for any embarrassingly parallel computation. What is surprisingly uncommon is applying it correctly to CI pipelines, which tend to evolve organically into sequential chains because sequential pipelines are easy to write and nobody goes back to parallelize them.
 
-```
-BEFORE (sequential):
-────────────────────────────────────────────────────────────────────────── time →
-[ setup ] → [ build-svc-a ] → [ test-svc-a ] → [ build-svc-b ] → [ test-svc-b ] → ...
-                                                                              47 min total
+```mermaid
+flowchart LR
+    subgraph before["BEFORE — sequential (~47 min)"]
+        direction LR
+        B0[setup] --> B1[build-svc-a] --> B2[test-svc-a] --> B3[build-svc-b] --> B4[test-svc-b] --> B5[...]
+    end
 
-AFTER (fan-out/fan-in):
-[ setup ] → ┌─ [ build+test svc-a ] ──────────────┐
-             ├─ [ build+test svc-b ] ──────────┐   │
-             ├─ [ build+test svc-c ] ────────┐ │   │
-             ├─ [ build+test svc-d ] ──────┐ │ │   │
-             └─ [ build+test svc-e ] ────┐ │ │ │   │
-                                         └─┴─┴─┴───┘ → [ fan-in: all pass? ] → deploy
-                                                                              8 min total
+    subgraph after["AFTER — fan-out / fan-in (~8 min)"]
+        direction TB
+        A0[setup] --> A1[build+test svc-a]
+        A0 --> A2[build+test svc-b]
+        A0 --> A3[build+test svc-c]
+        A0 --> A4[build+test svc-d]
+        A0 --> A5[build+test svc-e]
+        A1 & A2 & A3 & A4 & A5 --> A6[fan-in: all pass?]
+        A6 --> A7[deploy]
+    end
+
+    style B5 fill:#8b0000,color:#ffffff
+    style A6 fill:#1a472a,color:#ffffff
+    style A7 fill:#1a472a,color:#ffffff
 ```
 
 The fan-in gate is critical. It answers the question: *did everything that was supposed to succeed actually succeed?* Without a fan-in gate, a failed parallel job can be silently ignored — the pipeline continues because it doesn't know to wait.

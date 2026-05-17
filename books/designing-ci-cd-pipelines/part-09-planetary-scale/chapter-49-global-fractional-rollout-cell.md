@@ -45,22 +45,27 @@ A cell is an isolated, self-contained deployment unit. Each cell has its own:
 
 Cells are designed for failure isolation: a problem in cell A cannot directly affect cell B. The blast radius of any failure is bounded by cell size.
 
-```
-Global Cell Architecture:
+```mermaid
+flowchart TD
+    GLB["Global Load Balancer<br/>(Route 53, Global Accelerator, etc.)"]
+    CA["Cell A — 2% traffic — us-east-1<br/>canary cell — first to receive new deployments"]
+    CB["Cell B — 2% traffic — us-east-1<br/>canary cell — first to receive new deployments"]
+    CC["Cell C — 16% traffic — eu-west-1<br/>early majority"]
+    CD["Cell D — 40% traffic — ap-se-1<br/>majority cell — last to receive new deployments"]
+    CE["Cell E — 40% traffic — us-west-2<br/>majority cell — last to receive new deployments"]
 
-┌─────────────────────────────────────────────────────────────┐
-│                     Global Load Balancer                     │
-│              (Route 53, Global Accelerator, etc.)            │
-└──────┬──────────┬──────────┬──────────┬──────────┬──────────┘
-       │          │          │          │          │
-       ▼          ▼          ▼          ▼          ▼
-  Cell A      Cell B      Cell C      Cell D     Cell E
-  (2% traffic)(2% traffic)(16% traffic)(40% traffic)(40% traffic)
-  us-east-1   us-east-1   eu-west-1   ap-se-1    us-west-2
-  
-  Cells A+B: "canary cells" — first to receive new deployments
-  Cell C: "early majority"
-  Cells D+E: "majority cells" — last to receive new deployments
+    GLB --> CA
+    GLB --> CB
+    GLB --> CC
+    GLB --> CD
+    GLB --> CE
+
+    style GLB fill:#0f3460,color:#ffffff
+    style CA fill:#1a472a,color:#ffffff
+    style CB fill:#1a472a,color:#ffffff
+    style CC fill:#0f3460,color:#ffffff
+    style CD fill:#27272a,color:#e4e4e7
+    style CE fill:#27272a,color:#e4e4e7
 ```
 
 Each cell is independent:

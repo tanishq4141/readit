@@ -18,38 +18,27 @@ The chapters are roughly ordered from "foundational and almost universally appli
 
 ## Chapter Map
 
-```
-Chapter 3: Hermetic Build
-    │  Foundation for everything. Without hermetic builds,
-    │  the results of all other CI stages are suspect.
-    │
-    ├──────────────────────────────▶ Chapter 4: Matrix Build
-    │                                 (Run hermetic builds across
-    │                                  multiple environments/platforms)
-    │
-    └──────────────────────────────▶ Chapter 5: Build Cache & Fan-Out
-                                      (Run hermetic builds faster via
-                                       caching and parallelism)
-                                            │
-                                            ▼
-                            Chapter 6: Sidecar Verification
-                            (Add non-test checks in parallel
-                             without blocking the main build)
-                                            │
-                                            ▼
-                            Chapter 7: Test Impact Analysis
-                            (Run fewer hermetic builds by
-                             knowing what changed and what it affects)
-                                            │
-                                            ▼
-                            Chapter 8: Predictive & AI-Assisted Build
-                            (Use historical build data to predict
-                             failures and optimize test ordering)
-                                            │
-                                            ▼
-                            Chapter 9: Dynamic Provisioning
-                            (Infrastructure that scales to serve all
-                             of the above on demand)
+```mermaid
+flowchart TD
+    Ch3["Chapter 3: Hermetic Build<br/>Foundation for everything. Without hermetic builds,<br/>the results of all other CI stages are suspect."]
+    Ch4["Chapter 4: Matrix Build<br/>Run hermetic builds across multiple environments/platforms"]
+    Ch5["Chapter 5: Build Cache & Fan-Out<br/>Run hermetic builds faster via caching and parallelism"]
+    Ch6["Chapter 6: Sidecar Verification<br/>Add non-test checks in parallel without blocking the main build"]
+    Ch7["Chapter 7: Test Impact Analysis<br/>Run fewer hermetic builds by knowing what changed and what it affects"]
+    Ch8["Chapter 8: Predictive & AI-Assisted Build<br/>Use historical build data to predict failures and optimize test ordering"]
+    Ch9["Chapter 9: Dynamic Provisioning<br/>Infrastructure that scales to serve all of the above on demand"]
+
+    Ch3 --> Ch4
+    Ch3 --> Ch5
+    Ch5 --> Ch6 --> Ch7 --> Ch8 --> Ch9
+
+    style Ch3 fill:#0f3460,color:#ffffff
+    style Ch4 fill:#0f3460,color:#ffffff
+    style Ch5 fill:#0f3460,color:#ffffff
+    style Ch6 fill:#1a472a,color:#ffffff
+    style Ch7 fill:#0f3460,color:#ffffff
+    style Ch8 fill:#0f3460,color:#ffffff
+    style Ch9 fill:#1a472a,color:#ffffff
 ```
 
 ## Prerequisites

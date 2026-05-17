@@ -48,29 +48,30 @@ The solution: configuration-decoupled releases. The rate limit is a runtime conf
 
 In the coupled model, binary deployment and configuration change are the same event:
 
-```
-Code change ─▶ Build ─▶ Test ─▶ Deploy ─▶ Configuration active
-                                              │
-                                         Rollback = full redeployment
-                                         Config change = full deployment
+```mermaid
+flowchart LR
+    CC["Code change"] --> B["Build"] --> T["Test"] --> D["Deploy"] --> CA["Configuration active"]
+    RB["Rollback = full redeployment"]
+    CFG["Config change = full deployment"]
+    CA --> RB
+    CA --> CFG
+
+    style CA fill:#533483,color:#ffffff
 ```
 
 In the decoupled model, they're independent:
 
-```
-Code change ─▶ Build ─▶ Test ─▶ Deploy binary (behavior controlled by flags)
-                                         │
-                                         ▼
-                                    Binary in production
-                                    All features dark or at defaults
-                                         │
-                                         ▼
-Config change ─▶ Config service ─▶ Feature enabled for target segment
-                     │
-                     ▼
-              Change propagates in seconds
-              Rollback = revert config (seconds)
-              No deployment required
+```mermaid
+flowchart TD
+    CC2["Code change"] --> B2["Build"] --> T2["Test"] --> DB["Deploy binary<br/>(behavior controlled by flags)"]
+    DB --> BIN["Binary in production<br/>All features dark or at defaults"]
+    CFG2["Config change"] --> CS["Config service"] --> FE["Feature enabled for target segment"]
+    BIN --> CFG2
+    PROP["Change propagates in seconds<br/>Rollback = revert config (seconds)<br/>No deployment required"]
+    FE --> PROP
+
+    style BIN fill:#0f3460,color:#ffffff
+    style PROP fill:#1a472a,color:#ffffff
 ```
 
 The key operational benefits:

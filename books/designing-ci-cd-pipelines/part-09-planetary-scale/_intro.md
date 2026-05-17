@@ -12,34 +12,23 @@ This part covers the patterns that emerged from organizations that hit those wal
 
 ## Chapter Map
 
-```
-Chapter 47: Merge Queue (Pre-Submit)
-    │  The monorepo scale solution to "main is broken again"
-    │
-    ▼
-Chapter 48: Configuration-Decoupled Release
-    │  Separating binary deployment from feature enablement
-    │  Requires feature flag infrastructure (Chapter 21) at scale
-    │
-    ▼
-Chapter 49: Global Fractional Rollout & Cell Pattern
-    │  The deployment unit is a cell (isolated fault domain),
-    │  not a region or a service
-    │
-    ▼
-Chapter 50: Synthetic Prober Verification
-    │  Continuous synthetic traffic validates deployments globally
-    │  The feedback loop for cell-based rollouts
-    │
-    ▼
-Chapter 51: Automated Canary Analysis (ACA)
-    │  Statistical metric comparison replaces human approval
-    │  at the scale where human review is the bottleneck
-    │
-    ▼
-Chapter 52: Chaos-Driven Deployment
-    Failure injection during the canary phase validates
-    graceful degradation before full rollout
+```mermaid
+flowchart TD
+    Ch47["Chapter 47: Merge Queue (Pre-Submit)<br/>The monorepo scale solution to main is broken again"]
+    Ch48["Chapter 48: Configuration-Decoupled Release<br/>Separating binary deployment from feature enablement<br/>Requires feature flag infrastructure (Chapter 21) at scale"]
+    Ch49["Chapter 49: Global Fractional Rollout & Cell Pattern<br/>The deployment unit is a cell (isolated fault domain),<br/>not a region or a service"]
+    Ch50["Chapter 50: Synthetic Prober Verification<br/>Continuous synthetic traffic validates deployments globally<br/>The feedback loop for cell-based rollouts"]
+    Ch51["Chapter 51: Automated Canary Analysis (ACA)<br/>Statistical metric comparison replaces human approval<br/>at the scale where human review is the bottleneck"]
+    Ch52["Chapter 52: Chaos-Driven Deployment<br/>Failure injection during the canary phase validates<br/>graceful degradation before full rollout"]
+
+    Ch47 --> Ch48 --> Ch49 --> Ch50 --> Ch51 --> Ch52
+
+    style Ch47 fill:#0f3460,color:#ffffff
+    style Ch48 fill:#0f3460,color:#ffffff
+    style Ch49 fill:#0f3460,color:#ffffff
+    style Ch50 fill:#0f3460,color:#ffffff
+    style Ch51 fill:#0f3460,color:#ffffff
+    style Ch52 fill:#1a472a,color:#ffffff
 ```
 
 ## Chapters in This Part
