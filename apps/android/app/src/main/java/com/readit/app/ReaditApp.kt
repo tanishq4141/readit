@@ -107,8 +107,10 @@ fun ReaditApp() {
 
         Scaffold(
             topBar = {
-                if (route != null && route != "catalog") {
+                if (route != null) {
+                    val onCatalog = route == "catalog"
                     val title = when {
+                        onCatalog -> "Readit"
                         route.startsWith("read/") -> {
                             val slug = backStackEntry?.arguments?.getString("slug")
                             val chapterId = backStackEntry?.arguments?.getString("chapterId")
@@ -138,15 +140,17 @@ fun ReaditApp() {
                             )
                         },
                         navigationIcon = {
-                            IconButton(onClick = ::navigateBack) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = when {
-                                        route.startsWith("read/") -> "Back to contents"
-                                        route.startsWith("book/") -> "Back to library"
-                                        else -> "Back"
-                                    },
-                                )
+                            if (!onCatalog) {
+                                IconButton(onClick = ::navigateBack) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = when {
+                                            route.startsWith("read/") -> "Back to contents"
+                                            route.startsWith("book/") -> "Back to library"
+                                            else -> "Back"
+                                        },
+                                    )
+                                }
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(

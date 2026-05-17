@@ -53,12 +53,6 @@ fun CatalogScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(top = 8.dp),
                 )
-                Text(
-                    text = "Books written by your AI agent — technical, mental models, and startup craft.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
                 SyncStatusLine(
                     syncState = syncState,
                     contentSyncEnabled = contentSyncEnabled,
