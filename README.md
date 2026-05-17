@@ -54,9 +54,9 @@ On every push to `main`, GitLab CI runs:
 
 | Job | Output |
 |-----|--------|
-| `android:apk` | `readit-<commit>.apk` — debug build, downloadable from **Job artifacts** |
+| `android:apk` | `dist/readit.apk` — debug build, downloadable from **Job artifacts** |
 | `web:build` | Production Next.js build (`.next/`) — deploy job will be added when hosting is ready |
 
-**Install the Android app from CI:** open the pipeline on `main` → `android:apk` → **Browse** artifacts → download `readit-<sha>.apk`, then install on device (enable “Install unknown apps” for your browser/files app).
+**Install the Android app from CI:** open the pipeline on `main` → `android:apk` → **Browse** artifacts → download `readit.apk`, then install on device (enable “Install unknown apps” for your browser/files app).
 
 To sign release APKs later, add keystore CI variables and switch the pipeline to `assembleRelease` (see comments in `.gitlab-ci.yml`).
