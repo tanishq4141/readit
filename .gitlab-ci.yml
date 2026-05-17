@@ -20,7 +20,9 @@ variables:
   ANDROID_HOME: "${CI_PROJECT_DIR}/.android-sdk"
   CMDLINE_TOOLS_URL: "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
 
-# --- Content OTA (GitLab Generic Package Registry) ------------------------------
+# --- Content OTA (public S3) ----------------------------------------------------
+# CI variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION,
+# READIT_S3_BUCKET, READIT_CONTENT_BASE_URL; optional READIT_S3_PREFIX (default readit)
 
 content:publish:
   stage: publish
@@ -31,9 +33,9 @@ content:publish:
         - books/**/*
         - catalog/**/*
   script:
-    - apt-get update -qq && apt-get install -y -qq curl
-    - chmod +x scripts/publish-content-gitlab.sh
-    - ./scripts/publish-content-gitlab.sh
+    - apt-get update -qq && apt-get install -y -qq awscli rsync
+    - chmod +x scripts/publish-content-s3.sh
+    - ./scripts/publish-content-s3.sh
   artifacts:
     name: "readit-content-manifest-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -75,10 +77,6 @@ android:apk:
       - apps/android/.gradle/
     policy: pull-push
   script:
-    - |
-      if [ -n "${CI_PROJECT_ID}" ]; then
-        export READIT_CONTENT_BASE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/readit-content/latest/"
-      fi
     - cd apps/android
     - chmod +x gradlew
     # Debug APK: no keystore required; fine for sideloading from CI artifacts.

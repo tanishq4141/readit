@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build content-manifest.json for GitLab OTA sync.
+ * Build content-manifest.json for OTA sync (S3 / CDN).
  * Paths match Android BookRepository expectations (catalog/books.json, books/...).
  */
 import { createHash } from "node:crypto";

@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
@@ -43,10 +44,7 @@ class ContentSync(
         _state.value = SyncState.Syncing
         try {
             cacheRoot.mkdirs()
-            val manifest = fetchManifest() ?: run {
-                _state.value = SyncState.Error("Could not fetch content manifest")
-                return@withContext false
-            }
+            val manifest = fetchManifest()
 
             val localIndex = loadIndex()
             val toDownload = manifest.files.filter { file ->
@@ -79,7 +77,11 @@ class ContentSync(
         if (file.isFile) return
 
         val index = loadIndex()
-        val manifest = fetchManifest() ?: return
+        val manifest = try {
+            fetchManifest()
+        } catch (_: Exception) {
+            return
+        }
         val entry = manifest.files.find { it.path == path } ?: return
         if (index.hashes[path] == entry.sha256 && file.isFile) return
 
@@ -89,12 +91,22 @@ class ContentSync(
         saveIndex(ContentSyncIndex(manifest.version, updated))
     }
 
-    private fun fetchManifest(): ContentManifest? {
-        val url = baseUrl.trimEnd('/') + "/content-manifest.json"
+    private fun fetchManifest(): ContentManifest {
+        val url = resolveUrl("content-manifest.json")
         val request = Request.Builder().url(url).get().build()
         client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) return null
-            val body = response.body?.string() ?: return null
+            if (!response.isSuccessful) {
+                val hint = when (response.code) {
+                    401, 403 ->
+                        "Server returned ${response.code}. Check that S3 objects under your prefix are publicly readable."
+                    404 ->
+                        "Content not found (404). Run content:publish on main after changing books/ or catalog/."
+                    else -> "HTTP ${response.code} while fetching manifest"
+                }
+                throw IllegalStateException(hint)
+            }
+            val body = response.body?.string()
+                ?: throw IllegalStateException("Empty manifest response")
             return json.decodeFromString<ContentManifest>(body)
         }
     }
@@ -111,11 +123,8 @@ class ContentSync(
     }
 
     private fun downloadOne(entry: ContentManifestFile) {
-        val encodedPath = java.net.URLEncoder.encode(entry.path, Charsets.UTF_8.name())
-            .replace("+", "%20")
-        val packageUrl = baseUrl.trimEnd('/') + "/" + encodedPath
-
-        val request = Request.Builder().url(packageUrl).get().build()
+        val url = resolveUrl(entry.path)
+        val request = Request.Builder().url(url).get().build()
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
                 throw IllegalStateException("Failed to download ${entry.path}: HTTP ${response.code}")
@@ -130,6 +139,15 @@ class ContentSync(
                 tmp.delete()
             }
         }
+    }
+
+    private fun resolveUrl(relativePath: String): String {
+        val base = baseUrl.trimEnd('/').toHttpUrlOrNull()
+            ?: throw IllegalStateException("Invalid content base URL: $baseUrl")
+        return base.newBuilder()
+            .addPathSegments(relativePath.trimStart('/'))
+            .build()
+            .toString()
     }
 
     private fun pruneOrphans(validPaths: Set<String>, cachedPaths: Set<String>) {

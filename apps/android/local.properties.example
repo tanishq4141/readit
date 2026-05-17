@@ -1,6 +1,6 @@
 # Copy to local.properties (not committed). Android Studio may create local.properties automatically.
 sdk.dir=/path/to/Android/sdk
 
-# GitLab Generic Package base URL for OTA book sync (must end with /).
-# Example (replace PROJECT_ID with your GitLab project ID):
-# readit.content.base.url=https://gitlab.com/api/v4/projects/PROJECT_ID/packages/generic/readit-content/latest/
+# Public S3 content base URL for OTA book sync (must end with /).
+# Example:
+# readit.content.base.url=https://YOUR_BUCKET.s3.us-east-1.amazonaws.com/readit/

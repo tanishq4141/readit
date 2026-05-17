@@ -102,7 +102,7 @@ private fun SyncStatusLine(
         SyncState.Idle -> null
         SyncState.Syncing -> "Updating library…"
         is SyncState.UpToDate -> "Library up to date"
-        is SyncState.Error -> "Sync failed — pull down to retry"
+        is SyncState.Error -> syncState.message
     }
 
     text?.let {
@@ -121,13 +121,13 @@ private fun SyncStatusLine(
 private fun emptyLibraryMessage(syncState: SyncState, contentSyncEnabled: Boolean): String =
     when {
         !contentSyncEnabled ->
-            "No books found. Set readit.content.base.url in local.properties to sync from GitLab, or use a debug build with bundled manuscripts."
+            "No books found. Set readit.content.base.url in local.properties to sync from S3, or use a debug build with bundled manuscripts."
         syncState is SyncState.Syncing ->
             "Loading library…"
         syncState is SyncState.Error ->
             "Could not load the library. Connect to the internet and pull down to refresh."
         else ->
-            "No books yet. Pull down to sync from GitLab."
+            "No books yet. Pull down to sync from the server."
     }
 
 @Composable
