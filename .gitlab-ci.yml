@@ -68,7 +68,7 @@ android:apk:
     paths:
       - dist/readit.apk
     expire_in: 90 days
-    expose_as: "Readit Android (debug APK)"
+    expose_as: "Readit Android debug APK"
 
 # --- Web (build now; deploy when domain is ready) ------------------------------
 
