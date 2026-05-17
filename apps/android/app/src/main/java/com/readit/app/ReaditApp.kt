@@ -12,36 +12,68 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.readit.app.data.BookRepository
 import com.readit.app.data.ChapterRef
+import com.readit.app.data.ReaditContent
+import com.readit.app.data.SyncState
 import com.readit.app.ui.screens.BookDetailScreen
 import com.readit.app.ui.screens.CatalogScreen
 import com.readit.app.ui.screens.ReaderScreen
 import com.readit.app.ui.theme.ReaditTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaditApp() {
     val context = LocalContext.current
-    val repository = remember { BookRepository(context.applicationContext) }
+    val content = remember { ReaditContent(context.applicationContext) }
+    val repository = content.repository
+    val sync = content.sync
+    val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    val catalog = remember {
+
+    val syncState by sync.state.collectAsStateWithLifecycle()
+    var catalogKey by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        if (sync.isEnabled()) {
+            sync.sync()
+        }
+    }
+
+    LaunchedEffect(syncState) {
+        if (syncState is SyncState.UpToDate) {
+            catalogKey++
+        }
+    }
+
+    val catalog = remember(catalogKey) {
         try {
             repository.loadCatalog()
         } catch (_: Exception) {
             emptyList()
+        }
+    }
+
+    fun refreshLibrary() {
+        scope.launch {
+            sync.sync(force = true)
         }
     }
 
@@ -132,6 +164,9 @@ fun ReaditApp() {
                 composable("catalog") {
                     CatalogScreen(
                         books = catalog,
+                        syncState = syncState,
+                        contentSyncEnabled = sync.isEnabled(),
+                        onRefresh = ::refreshLibrary,
                         onBookClick = { slug -> navController.navigate("book/$slug") },
                     )
                 }
@@ -175,6 +210,13 @@ fun ReaditApp() {
 
                     val prev: ChapterRef? = flat.getOrNull(currentIndex - 1)
                     val next: ChapterRef? = flat.getOrNull(currentIndex + 1)
+
+                    LaunchedEffect(next?.assetPath) {
+                        val nextPath = next?.assetPath ?: return@LaunchedEffect
+                        if (sync.isEnabled()) {
+                            sync.ensureCached(nextPath)
+                        }
+                    }
 
                     ReaderScreen(
                         markdown = markdown,

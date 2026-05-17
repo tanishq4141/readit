@@ -1,14 +1,14 @@
 package com.readit.app.data
 
-import android.content.Context
 import kotlinx.serialization.json.Json
 
-class BookRepository(private val context: Context) {
+class BookRepository(private val store: ContentStore) {
 
     private val json = Json { ignoreUnknownKeys = true }
 
     fun loadCatalog(): List<BookMeta> {
-        val raw = readAsset("catalog/books.json")
+        val raw = store.readText("catalog/books.json")
+            ?: throw IllegalStateException("catalog/books.json not found")
         return json.decodeFromString<CatalogFile>(raw).books
     }
 
@@ -17,36 +17,38 @@ class BookRepository(private val context: Context) {
         val bookRoot = "books/${meta.folder}"
 
         val introPath = "$bookRoot/README.md"
-        val introTitle = titleFromAsset(introPath, meta.title)
+        val introTitle = titleFromPath(introPath, meta.title)
         val intro = ChapterRef("intro", introTitle, introPath, 0)
 
-        val partDirs = context.assets.list(bookRoot)
+        val partDirs = store.list(bookRoot)
             ?.filter { isPartDirectory(it) }
             ?.sorted()
             ?: emptyList()
 
         val parts = partDirs.map { partDir ->
             val partPath = "$bookRoot/$partDir"
-            val files = context.assets.list(partPath)?.toList() ?: emptyList()
+            val files = store.list(partPath) ?: emptyList()
             val chapterFiles = files
                 .filter { isChapterFile(it) }
                 .sortedBy { chapterOrder(it) }
 
             var partTitle = prettifySegment(partDir)
             if (files.contains("_intro.md")) {
-                partTitle = titleFromAsset("$partPath/_intro.md", partTitle)
+                partTitle = titleFromPath("$partPath/_intro.md", partTitle)
             } else if (chapterFiles.isNotEmpty()) {
-                val firstContent = readAsset("$partPath/${chapterFiles.first()}")
-                val partLine = Regex("""">\s*\*\*Part\s+\d+\s+of\s+\d+\s*·\s*(.+?)\*\*""")
-                    .find(firstContent)
-                if (partLine != null) partTitle = partLine.groupValues[1].trim()
+                val firstContent = store.readText("$partPath/${chapterFiles.first()}")
+                if (firstContent != null) {
+                    val partLine = Regex("""">\s*\*\*Part\s+\d+\s+of\s+\d+\s*·\s*(.+?)\*\*""")
+                        .find(firstContent)
+                    if (partLine != null) partTitle = partLine.groupValues[1].trim()
+                }
             }
 
             val chapters = chapterFiles.map { file ->
                 val assetPath = "$partPath/$file"
                 ChapterRef(
                     id = assetPath.removePrefix("$bookRoot/").removeSuffix(".md"),
-                    title = titleFromAsset(assetPath, prettifySegment(file)),
+                    title = titleFromPath(assetPath, prettifySegment(file)),
                     assetPath = assetPath,
                     order = chapterOrder(file),
                 )
@@ -58,7 +60,9 @@ class BookRepository(private val context: Context) {
         return BookIndex(meta, intro, parts)
     }
 
-    fun readChapter(assetPath: String): String = readAsset(assetPath)
+    fun readChapter(assetPath: String): String =
+        store.readText(assetPath)
+            ?: throw IllegalStateException("Chapter not found: $assetPath")
 
     fun flatChapters(index: BookIndex): List<ChapterRef> =
         listOf(index.intro) + index.parts.flatMap { it.chapters }
@@ -73,11 +77,8 @@ class BookRepository(private val context: Context) {
             name == "_intro.md"
     }
 
-    private fun readAsset(path: String): String =
-        context.assets.open(path).bufferedReader().readText()
-
-    private fun titleFromAsset(path: String, fallback: String): String {
-        val content = readAsset(path)
+    private fun titleFromPath(path: String, fallback: String): String {
+        val content = store.readText(path) ?: return fallback
         val match = Regex("^#\\s+(.+)$", RegexOption.MULTILINE).find(content)
         return match?.groupValues?.get(1)?.replace("*", "")?.trim() ?: fallback
     }

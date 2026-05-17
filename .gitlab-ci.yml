@@ -9,6 +9,7 @@
 # the Android job to assembleRelease with a signing config in app/build.gradle.kts.
 
 stages:
+  - publish
   - build
   # - deploy   # enable when domain / hosting is ready
 
@@ -18,6 +19,26 @@ variables:
   ANDROID_SDK_ROOT: "${CI_PROJECT_DIR}/.android-sdk"
   ANDROID_HOME: "${CI_PROJECT_DIR}/.android-sdk"
   CMDLINE_TOOLS_URL: "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+
+# --- Content OTA (GitLab Generic Package Registry) ------------------------------
+
+content:publish:
+  stage: publish
+  image: node:22-bookworm
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - books/**/*
+        - catalog/**/*
+  script:
+    - apt-get update -qq && apt-get install -y -qq curl
+    - chmod +x scripts/publish-content-gitlab.sh
+    - ./scripts/publish-content-gitlab.sh
+  artifacts:
+    name: "readit-content-manifest-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - dist/content-manifest.json
+    expire_in: 30 days
 
 # --- Android -------------------------------------------------------------------
 
@@ -54,6 +75,10 @@ android:apk:
       - apps/android/.gradle/
     policy: pull-push
   script:
+    - |
+      if [ -n "${CI_PROJECT_ID}" ]; then
+        export READIT_CONTENT_BASE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/readit-content/latest/"
+      fi
     - cd apps/android
     - chmod +x gradlew
     # Debug APK: no keystore required; fine for sideloading from CI artifacts.

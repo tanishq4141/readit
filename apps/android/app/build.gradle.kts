@@ -1,9 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
+
+val localProperties = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.reader().use { localProperties.load(it) }
+}
+
+fun contentBaseUrl(): String =
+    localProperties.getProperty("readit.content.base.url")
+        ?: System.getenv("READIT_CONTENT_BASE_URL")
+        ?: ""
 
 android {
     namespace = "com.readit.app"
@@ -15,6 +28,11 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        buildConfigField(
+            "String",
+            "CONTENT_BASE_URL",
+            "\"${contentBaseUrl().replace("\\", "\\\\").replace("\"", "\\\"")}\"",
+        )
     }
 
     buildTypes {
@@ -34,6 +52,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -42,32 +61,47 @@ val repoRoot = rootProject.projectDir.parentFile.parentFile
 
 val assetsDir = layout.projectDirectory.dir("src/main/assets")
 
-tasks.register<Copy>("syncBookAssets") {
-    description = "Copy books/ and catalog/ from the monorepo into Android assets"
+tasks.register<Copy>("syncBookAssetsCatalog") {
+    description = "Copy catalog/books.json into Android assets"
     group = "readit"
 
     doFirst {
-        delete(assetsDir.dir("books"))
         delete(assetsDir.dir("catalog"))
     }
 
-    from(repoRoot.resolve("books")) {
-        into("books")
-        exclude("**/.claude/**", "**/.git/**", "**/node_modules/**")
-    }
     from(repoRoot.resolve("catalog/books.json")) {
         into("catalog")
     }
     into(assetsDir)
 }
 
-listOf(
-    "preBuild",
-    "mergeDebugAssets",
-    "mergeReleaseAssets",
-).forEach { taskName ->
-    tasks.matching { it.name == taskName }.configureEach {
-        dependsOn("syncBookAssets")
+tasks.register<Copy>("syncBookAssetsBooks") {
+    description = "Copy books/ from the monorepo into Android assets (debug offline)"
+    group = "readit"
+
+    doFirst {
+        delete(assetsDir.dir("books"))
+    }
+
+    from(repoRoot.resolve("books")) {
+        into("books")
+        exclude("**/.claude/**", "**/.git/**", "**/node_modules/**")
+    }
+    into(assetsDir)
+}
+
+tasks.matching { it.name == "preBuild" }.configureEach {
+    dependsOn("syncBookAssetsCatalog")
+}
+
+tasks.matching { it.name == "mergeDebugAssets" }.configureEach {
+    dependsOn("syncBookAssetsBooks")
+}
+
+tasks.matching { it.name == "mergeReleaseAssets" }.configureEach {
+    dependsOn("syncBookAssetsCatalog")
+    doFirst {
+        delete(assetsDir.dir("books"))
     }
 }
 
@@ -86,6 +120,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.webkit:webkit:1.12.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
