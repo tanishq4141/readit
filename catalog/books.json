@@ -15,6 +15,14 @@
       "description": "A field manual of CI/CD design patterns — from hermetic builds and GitOps to planetary rollouts, MLOps, and case studies from teams shipping at real scale.",
       "type": "technical",
       "folder": "designing-ci-cd-pipelines"
+    },
+    {
+      "slug": "from-silicon-to-supercluster",
+      "title": "From Silicon to Supercluster",
+      "subtitle": "The 0.1% infrastructure engineer doesn't read documentation. They read silicon.",
+      "description": "From CPU memory walls to 10,000-GPU superclusters — 68 chapters covering the hardware, kernel, networking, consensus, orchestration, AI infrastructure, and data platform layers that most engineers treat as magic.",
+      "type": "technical",
+      "folder": "from-silicon-to-supercluster"
     }
   ]
 }
