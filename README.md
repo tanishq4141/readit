@@ -128,13 +128,15 @@ If terminal builds fail on Java 26+, uncomment `org.gradle.java.home` in `apps/a
 
 ## CI (GitLab)
 
-On every push to `main`, GitLab CI runs:
+On push to `main`, GitLab CI runs jobs when matching paths change:
 
 | Job | When | Output |
 |-----|------|--------|
-| `content:publish` | `books/**` or `catalog/**` changed | Syncs `books/`, `catalog/`, and manifest to S3 |
-| `android:apk` | Always on `main` | `dist/readit.apk` — uses `READIT_CONTENT_BASE_URL` from CI variables |
-| `web:deploy` | Always on `main` | Static shell + Pages deploy (content from S3 at runtime) |
+| `content:publish` | `books/**` or `catalog/**` | Syncs `books/`, `catalog/`, and manifest to S3 |
+| `android:apk` | `apps/android/**` or `catalog/**` | `dist/readit.apk` — book text still comes from S3 OTA |
+| `web:deploy` | `apps/web/**`, `catalog/**`, or root `package*.json` | Static shell + Pages deploy (chapters from S3 at runtime) |
+
+Book-only edits (`books/**`) publish to S3 but do **not** rebuild the APK or web app.
 
 Generate the content manifest locally:
 

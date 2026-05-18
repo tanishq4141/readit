@@ -1,8 +1,9 @@
 # Readit — GitLab CI
 #
-# main branch:
-#   android:apk  — debug APK artifact (sideload / internal install)
-#   web:deploy   — static Next export + Cloudflare Pages deploy
+# main branch (path-filtered where noted):
+#   content:publish — books/ or catalog/ changed
+#   android:apk     — apps/android/ or catalog/ changed (catalog is bundled in the APK)
+#   web:deploy      — apps/web/, root package files, or catalog/ changed (SSG routes + app shell)
 #
 # Optional release signing (future): set CI variables ANDROID_KEYSTORE_BASE64,
 # ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD and switch
@@ -71,6 +72,9 @@ android:apk:
   stage: build
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - apps/android/**/*
+        - catalog/**/*
   cache:
     key: android-gradle-${CI_COMMIT_REF_SLUG}
     paths:
@@ -103,6 +107,11 @@ web:deploy:
   image: node:latest
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - apps/web/**/*
+        - catalog/**/*
+        - package.json
+        - package-lock.json
   cache:
     key: npm-${CI_COMMIT_REF_SLUG}
     paths:
