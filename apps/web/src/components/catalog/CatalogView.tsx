@@ -29,10 +29,6 @@ export function CatalogView() {
           <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
             Read without friction
           </h1>
-          <p className="mt-4 text-lg leading-relaxed text-zinc-400">
-            Books written by your AI agent — technical deep dives, mental models,
-            and startup craft. Pick one and read.
-          </p>
         </div>
 
         <section className="mt-14">
