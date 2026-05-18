@@ -1,7 +1,8 @@
-import { readdir, readFile } from "fs/promises";
-import path from "path";
-import { getBookMeta } from "./catalog";
-import { BOOKS_ROOT } from "./paths";
+import {
+  fetchContentText,
+  listContentDir,
+} from "./content-store";
+import { getBookMeta, getCatalog } from "./catalog";
 import type { BookIndex, ChapterRef, PartRef } from "./types";
 
 function isPartDirectory(name: string): boolean {
@@ -38,82 +39,91 @@ function formatChapterTitle(title: string): string {
     .trim();
 }
 
-async function titleFromMarkdown(filePath: string, fallback: string): Promise<string> {
-  const content = await readFile(filePath, "utf-8");
+async function titleFromMarkdown(
+  assetPath: string,
+  fallback: string,
+): Promise<string> {
+  const content = await fetchContentText(assetPath);
+  if (!content) return fallback;
   const match = content.match(/^#\s+(.+)$/m);
   if (!match) return fallback;
   return match[1].replace(/\*+/g, "").trim();
 }
 
-function toChapterId(relativePath: string): string {
-  return relativePath.replace(/\.md$/i, "").split(path.sep).join("/");
+function chapterIdFromAsset(bookRoot: string, assetPath: string): string {
+  return assetPath
+    .replace(`${bookRoot}/`, "")
+    .replace(/\.md$/i, "");
 }
 
 async function partTitleFromIntro(
-  bookDir: string,
-  partDirName: string,
+  partPath: string,
   files: string[],
-): Promise<string | null> {
-  if (!files.includes("_intro.md")) return null;
-  const introPath = path.join(bookDir, partDirName, "_intro.md");
-  return titleFromMarkdown(introPath, prettifySegment(partDirName));
+  fallback: string,
+): Promise<string> {
+  if (!files.includes("_intro.md")) return fallback;
+  return titleFromMarkdown(`${partPath}/_intro.md`, fallback);
+}
+
+export async function getAllBookSlugs(): Promise<string[]> {
+  const books = await getCatalog();
+  return books.map((b) => b.slug);
 }
 
 export async function getBookIndex(slug: string): Promise<BookIndex | null> {
   const meta = await getBookMeta(slug);
   if (!meta) return null;
 
-  const bookDir = path.join(BOOKS_ROOT, meta.folder);
-  const introPath = path.join(bookDir, "README.md");
+  const bookRoot = `books/${meta.folder}`;
+  const introPath = `${bookRoot}/README.md`;
   const introTitle = await titleFromMarkdown(introPath, meta.title);
 
   const intro: ChapterRef = {
     id: "intro",
     title: introTitle,
-    relativePath: "README.md",
+    assetPath: introPath,
     order: 0,
   };
 
-  const entries = await readdir(bookDir, { withFileTypes: true });
-  const partDirs = entries
-    .filter((e) => e.isDirectory() && isPartDirectory(e.name))
-    .map((e) => e.name)
-    .sort();
-
+  const partDirs = (await listContentDir(bookRoot)).filter(isPartDirectory);
   const parts: PartRef[] = [];
 
   for (const partDirName of partDirs) {
-    const partPath = path.join(bookDir, partDirName);
-    const files = await readdir(partPath);
+    const partPath = `${bookRoot}/${partDirName}`;
+    const files = await listContentDir(partPath);
     const chapterFiles = files
       .filter(isChapterFile)
       .sort((a, b) => chapterOrder(a) - chapterOrder(b));
 
     const chapters: ChapterRef[] = [];
-
     for (const file of chapterFiles) {
-      const relativePath = path.join(partDirName, file);
-      const fullPath = path.join(bookDir, relativePath);
-      const title = await titleFromMarkdown(fullPath, prettifySegment(file));
+      const assetPath = `${partPath}/${file}`;
+      const title = await titleFromMarkdown(assetPath, prettifySegment(file));
       chapters.push({
-        id: toChapterId(relativePath),
+        id: chapterIdFromAsset(bookRoot, assetPath),
         title,
-        relativePath,
+        assetPath,
         order: chapterOrder(file),
       });
     }
 
     let partTitle =
-      (await partTitleFromIntro(bookDir, partDirName, files)) ??
-      prettifySegment(partDirName);
+      (await partTitleFromIntro(
+        partPath,
+        files,
+        prettifySegment(partDirName),
+      )) ?? prettifySegment(partDirName);
 
     if (!files.includes("_intro.md") && chapterFiles.length > 0) {
-      const firstChapterPath = path.join(bookDir, partDirName, chapterFiles[0]);
-      const content = await readFile(firstChapterPath, "utf-8");
-      const partLine = content.match(
-        />\s*\*\*Part\s+\d+\s+of\s+\d+\s*·\s*(.+?)\*\*/,
+      const firstContent = await fetchContentText(
+        `${partPath}/${chapterFiles[0]}`,
       );
-      if (partLine) partTitle = partLine[1].trim();
+      if (firstContent) {
+        const partLine = firstContent.match(
+          />\s*\*\*Part\s+\d+\s+of\s+\d+\s*·\s*(.+?)\*\*/,
+        );
+        if (partLine) partTitle = partLine[1].trim();
+      }
     }
 
     parts.push({
@@ -133,29 +143,29 @@ export async function getChapterMarkdown(
   const index = await getBookIndex(slug);
   if (!index) return null;
 
-  let relativePath: string | undefined;
+  let assetPath: string | undefined;
   let fallbackTitle = "Chapter";
 
   if (chapterId === "intro") {
-    relativePath = index.intro.relativePath;
+    assetPath = index.intro.assetPath;
     fallbackTitle = index.intro.title;
   } else {
     for (const part of index.parts) {
       const chapter = part.chapters.find((c) => c.id === chapterId);
       if (chapter) {
-        relativePath = chapter.relativePath;
+        assetPath = chapter.assetPath;
         fallbackTitle = chapter.title;
         break;
       }
     }
   }
 
-  if (!relativePath) return null;
+  if (!assetPath) return null;
 
-  const filePath = path.join(BOOKS_ROOT, index.meta.folder, relativePath);
-  const content = await readFile(filePath, "utf-8");
-  const title = await titleFromMarkdown(filePath, fallbackTitle);
+  const content = await fetchContentText(assetPath);
+  if (content === null) return null;
 
+  const title = await titleFromMarkdown(assetPath, fallbackTitle);
   return { content, title };
 }
 
@@ -163,13 +173,21 @@ export function getAdjacentChapters(
   index: BookIndex,
   chapterId: string,
 ): { prev?: ChapterRef; next?: ChapterRef } {
-  const flat: ChapterRef[] = [index.intro, ...index.parts.flatMap((p) => p.chapters)];
+  const flat: ChapterRef[] = [
+    index.intro,
+    ...index.parts.flatMap((p) => p.chapters),
+  ];
   const i = flat.findIndex((c) => c.id === chapterId);
   if (i < 0) return {};
   return {
     prev: i > 0 ? flat[i - 1] : undefined,
     next: i < flat.length - 1 ? flat[i + 1] : undefined,
   };
+}
+
+export function readerHref(slug: string, chapterId: string): string {
+  const q = encodeURIComponent(chapterId);
+  return `/books/${slug}/read?chapter=${q}`;
 }
 
 export { formatChapterTitle };

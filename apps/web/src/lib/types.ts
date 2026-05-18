@@ -12,7 +12,8 @@ export interface BookMeta {
 export interface ChapterRef {
   id: string;
   title: string;
-  relativePath: string;
+  /** S3 path, e.g. books/my-book/part-01/chapter-01.md */
+  assetPath: string;
   order: number;
 }
 

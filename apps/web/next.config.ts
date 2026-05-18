@@ -5,15 +5,11 @@ import { fileURLToPath } from "url";
 const monorepoRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const nextConfig: NextConfig = {
+  output: "export",
   reactCompiler: true,
-  outputFileTracingRoot: monorepoRoot,
   turbopack: {
     root: monorepoRoot,
   },
 };
 
 export default nextConfig;
-
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-
-initOpenNextCloudflareForDev();

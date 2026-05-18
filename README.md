@@ -33,26 +33,30 @@ npm run dev:web
 - `/books/{slug}` — table of contents
 - `/books/{slug}/read/{chapter}` — reader
 
-### Deploy to Cloudflare Workers
+### Deploy to Cloudflare Pages (free)
 
-The web app uses [OpenNext](https://opennext.js.org/cloudflare) + Wrangler (see [`apps/web/wrangler.jsonc`](apps/web/wrangler.jsonc)).
+The site is a **small static shell** (`next build` → `out/`). **Books load from the same public S3 prefix as Android** (`READIT_CONTENT_BASE_URL` / `content-manifest.json`). CI runs `wrangler pages deploy`.
 
 ```bash
-# Local Workers preview (after build)
-npm run build:worker --workspace=web
-npm run preview:worker --workspace=web
+# apps/web/.env.local (see .env.example)
+export NEXT_PUBLIC_READIT_CONTENT_BASE_URL="https://YOUR_BUCKET.s3.region.amazonaws.com/readit/"
 
-# Deploy (needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID)
-npm run deploy:web
+npm run dev:web          # fetches catalog + chapters from S3
+npm run build:web
+npx serve apps/web/out
+npm run deploy:web       # needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
 ```
 
-GitLab CI on `main`: `web:deploy` (build + deploy in one job). Set these CI/CD variables (masked):
+GitLab CI on `main`: `web:deploy` (uses `READIT_CONTENT_BASE_URL` for the web build). Also set:
 
 | Variable | Purpose |
 |----------|---------|
-| `CLOUDFLARE_API_TOKEN` | API token with Workers deploy permission |
+| `CLOUDFLARE_API_TOKEN` | API token with **Cloudflare Pages → Edit** |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-| `READIT_WEB_URL` | Optional — e.g. `https://readit-web.<subdomain>.workers.dev` for the GitLab environment link |
+| `READIT_CONTENT_BASE_URL` | Same S3 URL as Android (already required for `content:publish` / APK) |
+| `READIT_WEB_URL` | Optional — e.g. `https://readit-web.pages.dev` |
+
+After `content:publish`, refresh the site — **no web redeploy** needed for new chapters (only redeploy when you change `apps/web` code).
 
 ## Android
 
@@ -95,6 +99,23 @@ Must end with `/`. Match your bucket, region, and prefix (`readit` by default).
 
 3. Set GitLab CI/CD variables (masked): `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `READIT_S3_BUCKET`, `READIT_CONTENT_BASE_URL` (same HTTPS URL as above). Optional: `READIT_S3_PREFIX` (default `readit`).
 4. Verify in a browser: `https://YOUR_BUCKET.s3.REGION.amazonaws.com/readit/content-manifest.json` returns JSON (200).
+5. **CORS** (required for the web reader in the browser). In S3 → bucket → Permissions → CORS:
+
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedOrigins": [
+      "https://readit-web.pages.dev",
+      "http://localhost:3000"
+    ],
+    "ExposeHeaders": []
+  }
+]
+```
+
+Add your custom domain origin when you attach one to Pages.
 
 ### CLI build (optional)
 
@@ -113,7 +134,7 @@ On every push to `main`, GitLab CI runs:
 |-----|------|--------|
 | `content:publish` | `books/**` or `catalog/**` changed | Syncs `books/`, `catalog/`, and manifest to S3 |
 | `android:apk` | Always on `main` | `dist/readit.apk` — uses `READIT_CONTENT_BASE_URL` from CI variables |
-| `web:deploy` | Always on `main` | `opennextjs-cloudflare build` + `wrangler deploy` |
+| `web:deploy` | Always on `main` | Static shell + Pages deploy (content from S3 at runtime) |
 
 Generate the content manifest locally:
 

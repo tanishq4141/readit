@@ -1,5 +1,4 @@
-import { readFile } from "fs/promises";
-import { CATALOG_PATH } from "./paths";
+import { fetchContentText } from "./content-store";
 import type { BookMeta } from "./types";
 
 interface CatalogFile {
@@ -7,7 +6,10 @@ interface CatalogFile {
 }
 
 export async function getCatalog(): Promise<BookMeta[]> {
-  const raw = await readFile(CATALOG_PATH, "utf-8");
+  const raw = await fetchContentText("catalog/books.json");
+  if (!raw) {
+    throw new Error("catalog/books.json not found on content CDN");
+  }
   const data = JSON.parse(raw) as CatalogFile;
   return data.books;
 }
