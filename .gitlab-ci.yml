@@ -129,7 +129,8 @@ web:deploy:
       if ! npx wrangler pages project list 2>/dev/null | grep -qw readit-web; then
         npx wrangler pages project create readit-web --production-branch main
       fi
-    - npx wrangler pages deploy out --project-name=readit-web --commit-dirty=true
+    # Detached HEAD in CI — without --branch, Wrangler only creates a preview deployment
+    - npx wrangler pages deploy out --project-name=readit-web --branch=main --commit-hash="${CI_COMMIT_SHA}" --commit-dirty=true
   environment:
     name: production
     url: $READIT_WEB_URL
