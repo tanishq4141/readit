@@ -33,6 +33,27 @@ npm run dev:web
 - `/books/{slug}` — table of contents
 - `/books/{slug}/read/{chapter}` — reader
 
+### Deploy to Cloudflare Workers
+
+The web app uses [OpenNext](https://opennext.js.org/cloudflare) + Wrangler (see [`apps/web/wrangler.jsonc`](apps/web/wrangler.jsonc)).
+
+```bash
+# Local Workers preview (after build)
+npm run build:worker --workspace=web
+npm run preview:worker --workspace=web
+
+# Deploy (needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID)
+npm run deploy:web
+```
+
+GitLab CI on `main`: `web:deploy` (build + deploy in one job). Set these CI/CD variables (masked):
+
+| Variable | Purpose |
+|----------|---------|
+| `CLOUDFLARE_API_TOKEN` | API token with Workers deploy permission |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| `READIT_WEB_URL` | Optional — e.g. `https://readit-web.<subdomain>.workers.dev` for the GitLab environment link |
+
 ## Android
 
 Open `apps/android` in Android Studio, sync Gradle, run on a device or emulator.
@@ -92,7 +113,7 @@ On every push to `main`, GitLab CI runs:
 |-----|------|--------|
 | `content:publish` | `books/**` or `catalog/**` changed | Syncs `books/`, `catalog/`, and manifest to S3 |
 | `android:apk` | Always on `main` | `dist/readit.apk` — uses `READIT_CONTENT_BASE_URL` from CI variables |
-| `web:build` | Always on `main` | Production Next.js build (`.next/`) |
+| `web:deploy` | Always on `main` | `opennextjs-cloudflare build` + `wrangler deploy` |
 
 Generate the content manifest locally:
 

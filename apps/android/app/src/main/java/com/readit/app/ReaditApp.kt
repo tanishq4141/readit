@@ -189,12 +189,14 @@ fun ReaditApp() {
                     route = "book/{slug}",
                     arguments = listOf(navArgument("slug") { type = NavType.StringType }),
                 ) { entry ->
-                    val slug = entry.arguments?.getString("slug") ?: return@composable
-                    val index = repository.loadBookIndex(slug) ?: return@composable
-                    BookDetailScreen(
-                        index = index,
-                        onChapterClick = { chapterId -> openChapter(slug, chapterId) },
-                    )
+                    val slug = entry.arguments?.getString("slug")
+                    val index = slug?.let { repository.loadBookIndex(it) }
+                    if (slug != null && index != null) {
+                        BookDetailScreen(
+                            index = index,
+                            onChapterClick = { chapterId -> openChapter(slug, chapterId) },
+                        )
+                    }
                 }
 
                 composable(
@@ -207,37 +209,43 @@ fun ReaditApp() {
                         },
                     ),
                 ) { entry ->
-                    val slug = entry.arguments?.getString("slug") ?: return@composable
+                    val slug = entry.arguments?.getString("slug")
                     val chapterId = entry.arguments?.getString("chapterId") ?: "intro"
 
-                    key(chapterId) {
-                        val index = repository.loadBookIndex(slug) ?: return@key
-                        val flat = repository.flatChapters(index)
-                        val currentIndex = flat.indexOfFirst { it.id == chapterId }
-                        if (currentIndex < 0) return@key
+                    if (slug != null) {
+                        key(chapterId) {
+                            val index = repository.loadBookIndex(slug)
+                            if (index != null) {
+                                val flat = repository.flatChapters(index)
+                                val currentIndex = flat.indexOfFirst { it.id == chapterId }
+                                if (currentIndex >= 0) {
+                                    val chapter = flat[currentIndex]
+                                    val markdown = try {
+                                        repository.readChapter(chapter.assetPath)
+                                    } catch (_: Exception) {
+                                        null
+                                    }
 
-                        val chapter = flat[currentIndex]
-                        val markdown = try {
-                            repository.readChapter(chapter.assetPath)
-                        } catch (_: Exception) {
-                            return@key
-                        }
+                                    if (markdown != null) {
+                                        val prev: ChapterRef? = flat.getOrNull(currentIndex - 1)
+                                        val next: ChapterRef? = flat.getOrNull(currentIndex + 1)
 
-                        val prev: ChapterRef? = flat.getOrNull(currentIndex - 1)
-                        val next: ChapterRef? = flat.getOrNull(currentIndex + 1)
+                                        LaunchedEffect(next?.assetPath) {
+                                            val nextPath = next?.assetPath
+                                            if (nextPath != null && sync.isEnabled()) {
+                                                sync.ensureCached(nextPath)
+                                            }
+                                        }
 
-                        LaunchedEffect(next?.assetPath) {
-                            val nextPath = next?.assetPath ?: return@LaunchedEffect
-                            if (sync.isEnabled()) {
-                                sync.ensureCached(nextPath)
+                                        ReaderScreen(
+                                            markdown = markdown,
+                                            onPrevious = prev?.let { { openChapter(slug, it.id) } },
+                                            onNext = next?.let { { openChapter(slug, it.id) } },
+                                        )
+                                    }
+                                }
                             }
                         }
-
-                        ReaderScreen(
-                            markdown = markdown,
-                            onPrevious = prev?.let { { openChapter(slug, it.id) } },
-                            onNext = next?.let { { openChapter(slug, it.id) } },
-                        )
                     }
                 }
             }

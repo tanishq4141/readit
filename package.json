@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=web",
-    "build:web": "npm run build --workspace=web",
+    "build:web": "npm run build:worker --workspace=web",
+    "deploy:web": "npm run deploy:worker --workspace=web",
     "lint:web": "npm run lint --workspace=web",
     "content:manifest": "node scripts/generate-content-manifest.mjs"
   }

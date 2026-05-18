@@ -3,7 +3,12 @@ node_modules/
 
 # Next.js
 apps/web/.next/
+apps/web/.open-next/
 out/
+
+# Wrangler
+apps/web/.wrangler/
+apps/web/.dev.vars
 
 # Build
 dist/

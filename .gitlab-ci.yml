@@ -2,7 +2,7 @@
 #
 # main branch:
 #   android:apk  — debug APK artifact (sideload / internal install)
-#   web:build    — validates Next.js production build (deploy stage coming next)
+#   web:deploy   — OpenNext build + Wrangler deploy to Cloudflare Workers
 #
 # Optional release signing (future): set CI variables ANDROID_KEYSTORE_BASE64,
 # ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD and switch
@@ -11,7 +11,7 @@
 stages:
   - publish
   - build
-  # - deploy   # enable when domain / hosting is ready
+  - deploy
 
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -93,11 +93,13 @@ android:apk:
     expire_in: 90 days
     expose_as: "Readit Android debug APK"
 
-# --- Web (build now; deploy when domain is ready) ------------------------------
+# --- Web (OpenNext → Cloudflare Workers) ---------------------------------------
+# CI variables (masked): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+# Optional: READIT_WEB_URL — workers.dev URL for GitLab environment link
 
-web:build:
-  stage: build
-  image: node:22-bookworm
+web:deploy:
+  stage: deploy
+  image: node:latest
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   cache:
@@ -106,29 +108,12 @@ web:build:
       - node_modules/
       - apps/web/node_modules/
   script:
-    # Lockfile is often updated on macOS; optionalDependencies + explicit Linux installs
-    # work around npm optional-deps bug (https://github.com/npm/cli/issues/4828).
     - npm ci --include=optional
+    # Linux native bindings when lockfile was updated on macOS (npm optional-deps bug)
     - npm install -w web --include=optional --no-save @tailwindcss/oxide-linux-x64-gnu@4.3.0 lightningcss-linux-x64-gnu@1.32.0
-    - npm run build:web
-  artifacts:
-    name: "readit-web-${CI_COMMIT_SHORT_SHA}"
-    paths:
-      - apps/web/.next/
-      - apps/web/public/
-      - apps/web/package.json
-      - apps/web/next.config.ts
-    expire_in: 7 days
-
-# deploy:web:
-#   stage: deploy
-#   image: node:22-bookworm
-#   needs: ["web:build"]
-#   rules:
-#     - if: $CI_COMMIT_BRANCH == "main"
-#   script:
-#     # Example: static host, VPS, or container registry — wire to your domain.
-#     - echo "Deploy apps/web to production (configure runner secrets + host)"
-#   environment:
-#     name: production
-#     url: https://your-domain.example
+    - cd apps/web
+    - npx opennextjs-cloudflare build
+    - npx wrangler deploy
+  environment:
+    name: production
+    url: $READIT_WEB_URL
