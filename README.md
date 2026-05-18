@@ -47,7 +47,7 @@ npx serve apps/web/out
 npm run deploy:web       # needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
 ```
 
-GitLab CI on `main`: `web:deploy` (uses `READIT_CONTENT_BASE_URL` for the web build). Also set:
+GitLab CI on `main`: `web:deploy` (uses `READIT_CONTENT_BASE_URL` for the web build). The first run creates the Cloudflare Pages project `readit-web` if needed. Also set:
 
 | Variable | Purpose |
 |----------|---------|

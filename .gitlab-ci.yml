@@ -115,6 +115,11 @@ web:deploy:
     - cd apps/web
     - export NEXT_PUBLIC_READIT_CONTENT_BASE_URL="${READIT_CONTENT_BASE_URL}"
     - npm run build
+    # First pipeline run: create Pages project (no-op if it already exists)
+    - |
+      if ! npx wrangler pages project list 2>/dev/null | grep -qw readit-web; then
+        npx wrangler pages project create readit-web --production-branch main
+      fi
     - npx wrangler pages deploy out --project-name=readit-web --commit-dirty=true
   environment:
     name: production
