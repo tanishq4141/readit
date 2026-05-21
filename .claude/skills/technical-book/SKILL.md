@@ -1,5 +1,5 @@
 # SKILL: Technical / Engineering Book Generator
-## Genre: SRE · Distributed Systems · Platform Engineering · Infrastructure
+## Genre: SRE · Distributed Systems · Platform Engineering · Infrastructure · AI Engineering
 
 ---
 
